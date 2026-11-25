@@ -18,17 +18,24 @@ struct HoltApp: App {
         Window("Holt", id: WindowID.main) {
             MainWindowView(model: model)
         }
-        .defaultSize(width: 900, height: 720)
+        .defaultSize(width: 940, height: 760)
+
+        Window("Holt Settings", id: WindowID.settings) {
+            SettingsView(model: model)
+        }
+        .windowResizability(.contentSize)
     }
 }
 
 enum WindowID {
     static let main = "main"
+    static let settings = "settings"
 }
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Notifier.shared.requestAuthorization()
+        Notifier.shared.configure()
+        AppModel.shared.startMonitoring()
     }
 }

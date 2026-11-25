@@ -175,15 +175,31 @@ struct VoiceTests {
         }
     }
 
-    @Test func completionLinesExistAndAvoidAITells() throws {
-        let banned = ["Great job", "I understand", "delve", "journey", "!!"]
-        for tone in ToneBand.allCases {
-            for seed in 0..<5 {
-                let line = try #require(Voice.line(for: .completed(.work), tone: tone, seed: seed))
-                #expect(line.count <= 140)
-                #expect(banned.allSatisfy { !line.localizedCaseInsensitiveContains($0) })
+    @Test func everyEffectHasInVoiceLinesInEveryTone() {
+        let banned = ["Great job", "I understand", "delve", "journey", "!!", "Let's", "Remember,", "As an AI"]
+        let perKind: [SessionEffect] = SessionKind.allCases.flatMap { kind -> [SessionEffect] in
+            [.started(kind), .completed(kind), .endedEarly(kind)]
+        }
+        let other: [SessionEffect] = [.paused(.user), .paused(.idle), .paused(.sleep), .paused(.lock), .resumed]
+        let effects = perKind + other
+        for effect in effects {
+            for tone in ToneBand.allCases {
+                let lines = Voice.lines(for: effect, tone: tone)
+                #expect(!lines.isEmpty, "\(effect) / \(tone)")
+                for line in lines {
+                    #expect(line.count <= 140, "\(line)")
+                    #expect(banned.allSatisfy { !line.localizedCaseInsensitiveContains($0) }, "\(line)")
+                }
             }
         }
+    }
+
+    @Test func lineSeedsRotateAndNeverTrap() {
+        let a = Voice.line(for: .completed(.work), tone: .punchy, seed: 0)
+        let b = Voice.line(for: .completed(.work), tone: .punchy, seed: 1)
+        #expect(a != b)
+        #expect(Voice.line(for: .completed(.work), tone: .punchy, seed: Int.min) != nil)
+        #expect(Voice.line(for: .completed(.work), tone: .punchy, seed: -7) != nil)
     }
 
     @Test func clockFormat() {

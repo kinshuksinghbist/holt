@@ -84,6 +84,26 @@ public struct SessionState: Equatable, Codable, Sendable {
         completedInCycle + 1 >= config.sessionsBeforeLongBreak ? .longBreak : .shortBreak
     }
 
+    /// Focused seconds so far in the current work session (pauses and idle excluded); 0 otherwise.
+    public func workSecondsDone(at now: Date) -> TimeInterval {
+        switch phase {
+        case let .running(.work, _, _, planned), let .paused(.work, _, planned, _):
+            return max(0, planned - (remaining(at: now) ?? planned))
+        default:
+            return 0
+        }
+    }
+
+    public var isPaused: Bool {
+        if case .paused = phase { return true }
+        return false
+    }
+
+    /// Applies new settings. The running session keeps its length; the next one uses the new config.
+    public mutating func updateConfig(_ newConfig: TimerConfig) {
+        config = newConfig
+    }
+
     /// 1-based position of the current/next work session within the cycle.
     public var cyclePosition: Int {
         min(completedInCycle + 1, config.sessionsBeforeLongBreak)

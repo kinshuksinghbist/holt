@@ -9,4 +9,12 @@ public enum TimeFormat {
             ? String(format: "%d:%02d:%02d", h, m, s)
             : String(format: "%02d:%02d", m, s)
     }
+
+    /// Compact duration for summaries: `0m`, `25m`, `1h`, `1h 5m`.
+    public static func duration(_ seconds: TimeInterval) -> String {
+        let totalMinutes = Int(max(0, seconds) / 60)
+        let h = totalMinutes / 60, m = totalMinutes % 60
+        if h == 0 { return "\(m)m" }
+        return m == 0 ? "\(h)h" : "\(h)h \(m)m"
+    }
 }

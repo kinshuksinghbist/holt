@@ -12,14 +12,23 @@ Everything stays on your Mac: one local SQLite database, no account, no cloud.
 
 ## Status
 
-Early development — **milestone M0** (foundations). What works today:
+Early development — **milestone M1** in progress. What works today:
 
-- Menu bar timer: deep work, short/long breaks, pause/resume, take break, end
-  session, end break → next session ready.
-- Long break after every 4 completed sessions; ending early never counts.
+- **Jelly timer** — grab the jelly and stretch it to pick a session length
+  (5–60 min in 5s, then up to 3 h); it ticks with sound and trackpad haptics at
+  each step and starts when you let go. Tap it to start, arrow keys adjust it.
+  It shrinks as the session runs and jiggles while paused.
+- Menu bar timer: deep work, short/long breaks, pause/resume, take break, end,
+  end break → next session ready. Long break after N completed sessions; ending
+  early never counts.
+- **Focus guard** — sessions pause by themselves when you're idle (default
+  5 min, retroactively, so idle minutes never count), when the Mac sleeps or
+  the screen locks; they resume when you're back.
+- Notifications with actions (Skip break, Start next session, Resume, End).
+- Settings window: lengths, cycle, auto-start, idle pause, sounds,
+  notifications, haptics, open at login.
+- Today's focused time and sessions; Holt's feed of everything he's said.
 - Tone slider (Polite ↔ Punchy ↔ Strict) that changes Holt's wording.
-- Completion sound + notification with a Holt line.
-- Main window with the timer hero and a placeholder climbing animation.
 
 The full product is specified in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md);
 the build plan and milestones are in [docs/PLAN.md](docs/PLAN.md).
