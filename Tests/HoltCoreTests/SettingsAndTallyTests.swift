@@ -98,10 +98,10 @@ struct DailyTallyTests {
         var s = SessionState()
         s.perform(.startWork, now: t0)
         s.updateConfig(TimerConfig(workSeconds: 50 * 60))
-        #expect(s.remaining(at: t0) == 25 * 60)
+        #expect(s.remaining(at: t0) == 25.0 * 60)
         s.perform(.endSession, now: t0)
         s.perform(.startWork, now: t0)
-        #expect(s.remaining(at: t0) == 50 * 60)
+        #expect(s.remaining(at: t0) == 50.0 * 60)
     }
 
     @Test func compactDurations() {
