@@ -70,7 +70,8 @@ struct ContinuousWorkTrackerTests {
     @Test func triggersAtThresholdAndSnoozes() {
         var tracker = ContinuousWorkTracker()
         let running = SessionPhase.running(kind: .work, startedAt: t0, deadline: t0.addingTimeInterval(7200), planned: 7200)
-        #expect(!tracker.update(phase: running, now: t0, thresholdMinutes: 90, enabled: true))
+        let initial = tracker.update(phase: running, now: t0, thresholdMinutes: 90, enabled: true)
+        #expect(!initial)
         var t = t0
         var triggered = false
         for _ in 0..<(95 * 60 / 5) {
@@ -83,11 +84,14 @@ struct ContinuousWorkTrackerTests {
         #expect(triggered)
         #expect(tracker.accumulatedSeconds >= 90.0 * 60.0)
         // Does not fire repeatedly without snooze expiry
-        #expect(!tracker.update(phase: running, now: t.addingTimeInterval(5), thresholdMinutes: 90, enabled: true))
+        let repeatCheck = tracker.update(phase: running, now: t.addingTimeInterval(5), thresholdMinutes: 90, enabled: true)
+        #expect(!repeatCheck)
 
         tracker.snooze(now: t, minutes: 20)
-        #expect(!tracker.update(phase: running, now: t.addingTimeInterval(10 * 60), thresholdMinutes: 90, enabled: true))
-        #expect(tracker.update(phase: running, now: t.addingTimeInterval(20 * 60 + 5), thresholdMinutes: 90, enabled: true))
+        let duringSnooze = tracker.update(phase: running, now: t.addingTimeInterval(10 * 60), thresholdMinutes: 90, enabled: true)
+        #expect(!duringSnooze)
+        let afterSnooze = tracker.update(phase: running, now: t.addingTimeInterval(20 * 60 + 5), thresholdMinutes: 90, enabled: true)
+        #expect(afterSnooze)
     }
 
     @Test func breakOfOneMinuteResetsAccumulatedWork() {
