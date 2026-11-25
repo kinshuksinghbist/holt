@@ -10,26 +10,40 @@ enum NotificationCategory: String, CaseIterable {
     case workDoneBreakReady = "holt.work-done.break-ready"
     case breakOver = "holt.break-over"
     case away = "holt.away"
+    case workingTooLong = "holt.working-too-long"
 
     static let actionPrefix = "holt.action."
+    static let snoozeTooLongID = "holt.custom.snooze-too-long"
 
-    var actions: [SessionAction] {
+    var actionDefinitions: [(id: String, title: String)] {
         switch self {
-        case .workDoneBreakRunning: [.endBreak, .endSession]
-        case .workDoneBreakReady: [.startNext, .endSession]
-        case .breakOver: [.startNext, .endSession]
-        case .away: [.resume, .endSession]
-        }
-    }
-
-    func title(for action: SessionAction) -> String {
-        switch (self, action) {
-        case (.workDoneBreakRunning, .endBreak): "Skip break"
-        case (.workDoneBreakReady, .startNext): "Start break"
-        case (.breakOver, .startNext): "Start next session"
-        case (_, .endSession): "End for now"
-        case (_, .resume): "Resume"
-        default: Voice.label(for: action, tone: .punchy)
+        case .workDoneBreakRunning:
+            return [
+                (Self.identifier(for: .endBreak), "Skip break"),
+                (Self.identifier(for: .extend), "Keep going 10 m"),
+                (Self.identifier(for: .endSession), "End for now"),
+            ]
+        case .workDoneBreakReady:
+            return [
+                (Self.identifier(for: .startNext), "Start break"),
+                (Self.identifier(for: .extend), "Keep going 10 m"),
+                (Self.identifier(for: .endSession), "End for now"),
+            ]
+        case .breakOver:
+            return [
+                (Self.identifier(for: .startNext), "Start next session"),
+                (Self.identifier(for: .endSession), "End for now"),
+            ]
+        case .away:
+            return [
+                (Self.identifier(for: .resume), "Resume"),
+                (Self.identifier(for: .endSession), "End for now"),
+            ]
+        case .workingTooLong:
+            return [
+                (Self.identifier(for: .takeBreak), "Take break"),
+                (Self.snoozeTooLongID, "Snooze 20 m"),
+            ]
         }
     }
 
@@ -62,12 +76,8 @@ final class Notifier {
         let categories = NotificationCategory.allCases.map { category in
             UNNotificationCategory(
                 identifier: category.rawValue,
-                actions: category.actions.map { action in
-                    UNNotificationAction(
-                        identifier: NotificationCategory.identifier(for: action),
-                        title: category.title(for: action),
-                        options: []
-                    )
+                actions: category.actionDefinitions.map { item in
+                    UNNotificationAction(identifier: item.id, title: item.title, options: [])
                 },
                 intentIdentifiers: [],
                 options: []
@@ -115,26 +125,77 @@ final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
     }
 }
 
-/// System sounds until the custom Holt sounds ship.
+enum HoltResources {
+    static let bundle: Bundle = {
+        if let url = Bundle.main.url(forResource: "Holt_Holt", withExtension: "bundle"),
+           let bundle = Bundle(url: url) {
+            return bundle
+        }
+        return Bundle.module
+    }()
+}
+
+/// Plays bundled Holt sounds, macOS system sounds, or a user-chosen file with volume control.
 @MainActor
 enum Sounds {
-    private static let workDone = NSSound(named: NSSound.Name("Glass"))
-    private static let breakOver = NSSound(named: NSSound.Name("Hero"))
-    private static let release = NSSound(named: NSSound.Name("Pop"))
-    private static let step: NSSound? = {
-        let sound = NSSound(named: NSSound.Name("Tink"))
-        sound?.volume = 0.25
-        return sound
-    }()
+    private static func bundledSound(named name: String) -> NSSound? {
+        guard let url = HoltResources.bundle.url(forResource: name, withExtension: "wav", subdirectory: "Sounds")
+            ?? HoltResources.bundle.url(forResource: name, withExtension: "wav") else {
+            return nil
+        }
+        return NSSound(contentsOf: url, byReference: true)
+    }
 
-    static func playWorkDone() { replay(workDone) }
-    static func playBreakOver() { replay(breakOver) }
-    static func playRelease() { replay(release) }
-    static func playStep() { replay(step) }
+    private static let holtWorkDone = bundledSound(named: "holt_work_done")
+    private static let holtBreakOver = bundledSound(named: "holt_break_over")
+    private static let holtStep = bundledSound(named: "holt_step")
+    private static let holtBlop = bundledSound(named: "holt_blop")
 
-    private static func replay(_ sound: NSSound?) {
+    private static let sysWorkDone = NSSound(named: NSSound.Name("Glass"))
+    private static let sysBreakOver = NSSound(named: NSSound.Name("Hero"))
+    private static let sysRelease = NSSound(named: NSSound.Name("Pop"))
+    private static let sysStep = NSSound(named: NSSound.Name("Tink"))
+
+    static func playWorkDone(settings: AppSettings) {
+        guard settings.playSounds else { return }
+        let sound: NSSound?
+        switch settings.soundChoice {
+        case .holt:
+            sound = holtWorkDone ?? sysWorkDone
+        case .system:
+            sound = sysWorkDone
+        case .custom:
+            if let path = settings.customSoundPath, !path.isEmpty {
+                sound = NSSound(contentsOfFile: path, byReference: true) ?? holtWorkDone ?? sysWorkDone
+            } else {
+                sound = holtWorkDone ?? sysWorkDone
+            }
+        }
+        play(sound, volume: settings.soundVolume)
+    }
+
+    static func playBreakOver(settings: AppSettings) {
+        guard settings.playSounds else { return }
+        let sound = settings.soundChoice == .system ? sysBreakOver : (holtBreakOver ?? sysBreakOver)
+        play(sound, volume: settings.soundVolume)
+    }
+
+    static func playRelease(settings: AppSettings) {
+        guard settings.playSounds else { return }
+        let sound = settings.soundChoice == .system ? sysRelease : (holtBlop ?? sysRelease)
+        play(sound, volume: settings.soundVolume * 0.85)
+    }
+
+    static func playStep(settings: AppSettings) {
+        guard settings.playSounds else { return }
+        let sound = settings.soundChoice == .system ? sysStep : (holtStep ?? sysStep)
+        play(sound, volume: settings.soundVolume * 0.35)
+    }
+
+    private static func play(_ sound: NSSound?, volume: Double) {
         guard let sound else { return }
         sound.stop()
+        sound.volume = Float(min(max(volume, 0), 1))
         sound.play()
     }
 }
@@ -142,10 +203,10 @@ enum Sounds {
 /// Tactile feedback for the jelly: trackpad haptic + a soft tick.
 @MainActor
 enum Feedback {
-    static func step(haptics: Bool, sound: Bool) {
+    static func step(haptics: Bool, settings: AppSettings) {
         if haptics {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
-        if sound { Sounds.playStep() }
+        Sounds.playStep(settings: settings)
     }
 }

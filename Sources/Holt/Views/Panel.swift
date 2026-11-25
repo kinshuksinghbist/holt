@@ -2,25 +2,10 @@ import AppKit
 import HoltCore
 import SwiftUI
 
-struct MenuBarLabel: View {
-    let model: AppModel
-
-    var body: some View {
-        // Standard menu bar label: an SF Symbol, plus the countdown while a session exists.
-        HStack(spacing: 4) {
-            Image(systemName: model.menuBarSymbol)
-            if !model.menuBarTitle.isEmpty {
-                Text(model.menuBarTitle).monospacedDigit()
-            }
-        }
-        .onAppear { Diagnostics.log("menu bar label appeared") }
-    }
-}
-
 /// The menu bar panel: today, the timer hero, tone and Holt's latest line.
 struct PanelView: View {
     let model: AppModel
-    @Environment(\.openWindow) private var openWindow
+    var closePanel: (@MainActor () -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 12) {
@@ -66,7 +51,7 @@ struct PanelView: View {
     }
 
     private func open(_ id: String) {
-        openWindow(id: id)
-        NSApp.activate()
+        closePanel?()
+        model.openWindow(id)
     }
 }

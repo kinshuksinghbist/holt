@@ -144,7 +144,7 @@ struct JellyTimer: View {
                 let minutes = JellyDial.minutes(forStretch: stretch)
                 if minutes != dragMinutes {
                     dragMinutes = minutes
-                    Feedback.step(haptics: model.settings.jellyHaptics, sound: model.settings.playSounds)
+                    Feedback.step(haptics: model.settings.jellyHaptics, settings: model.settings)
                 }
                 jelly.pull = JellyPull(
                     angle: atan2(dy, dx),
@@ -160,7 +160,7 @@ struct JellyTimer: View {
                 if reduceMotion { jelly.settle() } else { jelly.wobble(strength: 70) }
                 guard model.canSetDuration else { return } // a poke while running: just wobble
                 if let chosen {
-                    if model.settings.playSounds { Sounds.playRelease() }
+                    Sounds.playRelease(settings: model.settings)
                     model.start(minutes: chosen)
                 } else if moved < 4 {
                     model.startUpcoming()
@@ -171,7 +171,7 @@ struct JellyTimer: View {
     private func step(by delta: Int) -> KeyPress.Result {
         guard model.canSetDuration else { return .ignored }
         model.adjustPending(bySteps: delta)
-        Feedback.step(haptics: false, sound: model.settings.playSounds)
+        Feedback.step(haptics: false, settings: model.settings)
         if !reduceMotion { jelly.wobble(strength: 25) }
         return .handled
     }

@@ -157,6 +157,37 @@ struct SessionEngineTests {
         let data = try JSONEncoder().encode(s)
         #expect(try JSONDecoder().decode(SessionState.self, from: data) == s)
     }
+
+    @Test func extendAddsTimeToRunningAndPausedWork() {
+        var s = SessionState()
+        s.perform(.startWork, now: t0)
+        #expect(s.perform(.extend, now: at(20 * minute)) == [.extended])
+        #expect(s.remaining(at: at(20 * minute)) == 15.0 * minute)
+
+        s.perform(.pause, now: at(25 * minute))
+        #expect(s.perform(.extend, now: at(30 * minute)) == [.extended])
+        #expect(s.remaining(at: at(30 * minute)) == 20.0 * minute)
+    }
+
+    @Test func extendAfterWorkCompletionRevertsCycleAndContinuesWork() {
+        var s = SessionState()
+        s.perform(.startWork, now: t0)
+        s.tick(now: at(25 * minute))
+        #expect(s.completedInCycle == 1)
+        #expect(s.completedTotal == 1)
+        #expect(s.phase.kind == .shortBreak)
+
+        #expect(s.perform(.extend, now: at(25 * minute)) == [.extended])
+        #expect(s.phase.kind == .work)
+        #expect(s.completedInCycle == 0)
+        #expect(s.completedTotal == 0)
+        #expect(s.remaining(at: at(25 * minute)) == 10.0 * minute)
+
+        // Manual break from idle cannot be extended into work
+        var idle = SessionState()
+        idle.perform(.takeBreak, now: t0)
+        #expect(idle.perform(.extend, now: t0).isEmpty)
+    }
 }
 
 @Suite("Voice & formatting")
@@ -180,7 +211,7 @@ struct VoiceTests {
         let perKind: [SessionEffect] = SessionKind.allCases.flatMap { kind -> [SessionEffect] in
             [.started(kind), .completed(kind), .endedEarly(kind)]
         }
-        let other: [SessionEffect] = [.paused(.user), .paused(.idle), .paused(.sleep), .paused(.lock), .resumed]
+        let other: [SessionEffect] = [.paused(.user), .paused(.idle), .paused(.sleep), .paused(.lock), .resumed, .extended]
         let effects = perKind + other
         for effect in effects {
             for tone in ToneBand.allCases {
@@ -190,6 +221,14 @@ struct VoiceTests {
                     #expect(line.count <= 140, "\(line)")
                     #expect(banned.allSatisfy { !line.localizedCaseInsensitiveContains($0) }, "\(line)")
                 }
+            }
+        }
+        for tone in ToneBand.allCases {
+            let lines = Voice.workingTooLongLines(minutes: 90, tone: tone)
+            #expect(!lines.isEmpty)
+            for line in lines {
+                #expect(line.count <= 140, "\(line)")
+                #expect(banned.allSatisfy { !line.localizedCaseInsensitiveContains($0) }, "\(line)")
             }
         }
     }

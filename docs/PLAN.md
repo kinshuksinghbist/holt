@@ -303,6 +303,7 @@ you're in a session and on task.
   settings (built-in, custom file, volume, mute); open at login.
 - ✅ Every state transition unit-tested incl. sleep/idle edges; jelly physics
   stability tests; manual QA checklist for sleep/lock.
+- *Progress:* AppKit `NSStatusItem` + `NSPopover` menu bar icon, Carbon global hotkeys, working-too-long nudge, `extend` (Keep going 10 m) action, and custom bundled Holt WAV sounds implemented.
 
 **M2 — Tasks, lists, notes, history**
 - GRDB + migrations; lists, todos, statuses, events, rollover chains,

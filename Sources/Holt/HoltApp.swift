@@ -8,19 +8,12 @@ struct HoltApp: App {
     @State private var model = AppModel.shared
 
     var body: some Scene {
-        // The main window is the first scene so SwiftUI opens it at launch: Holt is always
-        // reachable even if the menu bar icon is hidden.
+        // The main window is the first scene so SwiftUI opens it at launch and captures
+        // `OpenWindowAction` for the AppKit status bar popover and reopen handler.
         Window("Holt", id: WindowID.main) {
             MainWindowView(model: model)
         }
         .defaultSize(width: 940, height: 760)
-
-        MenuBarExtra {
-            PanelView(model: model)
-        } label: {
-            MenuBarLabel(model: model)
-        }
-        .menuBarExtraStyle(.window)
 
         Window("Holt Settings", id: WindowID.settings) {
             SettingsView(model: model)
@@ -39,6 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         Diagnostics.log("launched \(Diagnostics.version)")
         Notifier.shared.configure()
+        StatusBarController.shared.install(model: AppModel.shared)
         AppModel.shared.startMonitoring()
         Task {
             try? await Task.sleep(for: .seconds(3))

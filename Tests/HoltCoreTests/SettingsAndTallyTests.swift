@@ -45,11 +45,62 @@ struct AppSettingsTests {
         s.longBreakMinutes = 999
         s.sessionsBeforeLongBreak = 0
         s.idleMinutes = 100
+        s.workingTooLongMinutes = 5
+        s.soundVolume = 4.5
         let c = s.clamped()
         #expect(c.workMinutes == 5)
         #expect(c.longBreakMinutes == 120)
         #expect(c.sessionsBeforeLongBreak == 2)
         #expect(c.idleMinutes == 30)
+        #expect(c.workingTooLongMinutes == 30)
+        #expect(c.soundVolume == 1.0)
+    }
+
+    @Test func hotkeyDisplayFormatting() {
+        #expect(HotkeyShortcut.defaultStartPause.displayString == "⌃⌥Space")
+        #expect(HotkeyShortcut.defaultTakeBreak.displayString == "⌃⌥B")
+        #expect(HotkeyShortcut.defaultEndSession.displayString == "⌃⌥E")
+    }
+}
+
+@Suite("Continuous work tracker")
+struct ContinuousWorkTrackerTests {
+    private let t0 = Date(timeIntervalSince1970: 1_800_000_000)
+
+    @Test func triggersAtThresholdAndSnoozes() {
+        var tracker = ContinuousWorkTracker()
+        let running = SessionPhase.running(kind: .work, startedAt: t0, deadline: t0.addingTimeInterval(7200), planned: 7200)
+        #expect(!tracker.update(phase: running, now: t0, thresholdMinutes: 90, enabled: true))
+        var t = t0
+        var triggered = false
+        for _ in 0..<(95 * 60 / 5) {
+            t = t.addingTimeInterval(5)
+            if tracker.update(phase: running, now: t, thresholdMinutes: 90, enabled: true) {
+                triggered = true
+                break
+            }
+        }
+        #expect(triggered)
+        #expect(tracker.accumulatedSeconds >= 90.0 * 60.0)
+        // Does not fire repeatedly without snooze expiry
+        #expect(!tracker.update(phase: running, now: t.addingTimeInterval(5), thresholdMinutes: 90, enabled: true))
+
+        tracker.snooze(now: t, minutes: 20)
+        #expect(!tracker.update(phase: running, now: t.addingTimeInterval(10 * 60), thresholdMinutes: 90, enabled: true))
+        #expect(tracker.update(phase: running, now: t.addingTimeInterval(20 * 60 + 5), thresholdMinutes: 90, enabled: true))
+    }
+
+    @Test func breakOfOneMinuteResetsAccumulatedWork() {
+        var tracker = ContinuousWorkTracker()
+        let work = SessionPhase.running(kind: .work, startedAt: t0, deadline: t0.addingTimeInterval(1500), planned: 1500)
+        _ = tracker.update(phase: work, now: t0, thresholdMinutes: 90, enabled: true)
+        _ = tracker.update(phase: work, now: t0.addingTimeInterval(120), thresholdMinutes: 90, enabled: true)
+        #expect(tracker.accumulatedSeconds == 120.0)
+
+        let brk = SessionPhase.running(kind: .shortBreak, startedAt: t0, deadline: t0.addingTimeInterval(300), planned: 300)
+        _ = tracker.update(phase: brk, now: t0.addingTimeInterval(125), thresholdMinutes: 90, enabled: true)
+        _ = tracker.update(phase: brk, now: t0.addingTimeInterval(190), thresholdMinutes: 90, enabled: true)
+        #expect(tracker.accumulatedSeconds == 0.0)
     }
 }
 

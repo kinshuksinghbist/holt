@@ -36,12 +36,13 @@ final class AppModel {
     var launchAtLogin: Bool
     private(set) var loginItemMessage: String?
 
-    /// SwiftUI's window opener, captured by the main window so AppKit code can reopen it.
+    /// SwiftUI's window opener, captured by the main window so AppKit code can reopen windows.
     @ObservationIgnored var windowOpener: OpenWindowAction?
     @ObservationIgnored private let activity: ActivityMonitor
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var lineCounter = 0
     @ObservationIgnored private var awaySince: Date?
+    @ObservationIgnored private var continuousWork = ContinuousWorkTracker()
 
     private enum Keys {
         static let state = "holt.sessionState"
@@ -71,13 +72,14 @@ final class AppModel {
         syncTicker()
     }
 
-    /// Called once at launch: hooks up system events and catches up on anything that
+    /// Called once at launch: hooks up system events, hotkeys, and catches up on anything that
     /// finished while Holt wasn't running.
     func startMonitoring() {
         activity.onAway = { [weak self] reason in self?.userWentAway(reason) }
         activity.onBack = { [weak self] in self?.userCameBack() }
         activity.onPoll = { [weak self] in self?.checkIdle() }
         activity.start()
+        GlobalHotkeys.shared.configure(with: settings)
         tick()
     }
 
@@ -208,6 +210,19 @@ final class AppModel {
         start(minutes: pendingMinutes ?? settings.minutes(for: upcomingKind))
     }
 
+    func toggleStartPauseFromHotkey() {
+        switch state.phase {
+        case .idle, .ready:
+            startUpcoming()
+        case .running(.work, _, _, _):
+            perform(.pause)
+        case .running:
+            perform(.endBreak)
+        case .paused:
+            perform(.resume)
+        }
+    }
+
     func adjustPending(bySteps delta: Int) {
         guard canSetDuration else { return }
         let current = pendingMinutes ?? settings.minutes(for: upcomingKind)
@@ -220,16 +235,25 @@ final class AppModel {
         pendingMinutes = JellyDial.adjusted(current, bySteps: delta)
     }
 
-    func showMainWindow() {
-        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue.hasPrefix(WindowID.main) == true }) {
+    func openWindow(_ id: String) {
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue.hasPrefix(id) == true }) {
             window.makeKeyAndOrderFront(nil)
         } else {
-            windowOpener?.callAsFunction(id: WindowID.main)
+            windowOpener?.callAsFunction(id: id)
         }
         NSApp.activate()
     }
 
+    func showMainWindow() {
+        openWindow(WindowID.main)
+    }
+
     func handleNotificationAction(_ identifier: String) {
+        if identifier == NotificationCategory.snoozeTooLongID {
+            continuousWork.snooze(now: .now, minutes: 20)
+            say("Snoozed for 20 minutes. Do not make this a habit.")
+            return
+        }
         guard let action = NotificationCategory.action(for: identifier) else { return }
         perform(action)
     }
@@ -242,6 +266,7 @@ final class AppModel {
         let clamped = settings.clamped()
         if clamped != settings { settings = clamped }
         state.updateConfig(settings.timerConfig)
+        GlobalHotkeys.shared.configure(with: settings)
         Self.save(settings, key: Keys.settings)
         persist()
     }
@@ -283,6 +308,7 @@ final class AppModel {
         Notifier.shared.clearDelivered()
         today.record(effects, workSecondsDone: workDone)
         handle(effects)
+        checkContinuousWork()
         persist()
         syncTicker()
     }
@@ -297,8 +323,10 @@ final class AppModel {
             let line = Voice.line(for: effect, tone: toneBand, seed: lineCounter)
             if let line { say(line) }
             if case let .completed(kind) = effect {
-                if settings.playSounds {
-                    if kind == .work { Sounds.playWorkDone() } else { Sounds.playBreakOver() }
+                if kind == .work {
+                    Sounds.playWorkDone(settings: settings)
+                } else {
+                    Sounds.playBreakOver(settings: settings)
                 }
                 notifyCompletion(of: kind, line: line ?? "")
             }
@@ -323,10 +351,11 @@ final class AppModel {
         if feed.count > 50 { feed.removeFirst(feed.count - 50) }
     }
 
-    // MARK: - Idle, sleep, lock
+    // MARK: - Idle, sleep, lock, working too long
 
     private func checkIdle() {
         rollDayIfNeeded() // runs every 5 s, so "Today" turns over even with no session running
+        checkContinuousWork()
         guard settings.pauseWhenIdle else { return }
         let idle = activity.secondsSinceInput(keyboardCounts: settings.keyboardCountsAsActivity)
         let threshold = TimeInterval(settings.idleMinutes * 60)
@@ -339,6 +368,30 @@ final class AppModel {
             apply { state, now in state.perform(.resume, now: now) }
         default:
             break
+        }
+    }
+
+    private func checkContinuousWork() {
+        let shouldNudge = continuousWork.update(
+            phase: state.phase,
+            now: .now,
+            thresholdMinutes: settings.workingTooLongMinutes,
+            enabled: settings.nudgeWorkingTooLong
+        )
+        guard shouldNudge else { return }
+        lineCounter += 1
+        let line = Voice.workingTooLongLine(
+            minutes: settings.workingTooLongMinutes,
+            tone: toneBand,
+            seed: lineCounter
+        )
+        say(line)
+        if settings.showNotifications {
+            Notifier.shared.post(
+                title: "Working too long",
+                body: line,
+                category: .workingTooLong
+            )
         }
     }
 

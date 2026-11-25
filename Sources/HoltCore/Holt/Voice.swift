@@ -35,6 +35,7 @@ public enum Voice {
         case (.endSession, _): "End"
         case (.endBreak, _): "End break"
         case (.startNext, _): "Start"
+        case (.extend, _): "Keep going 10 m"
         }
     }
 
@@ -43,6 +44,32 @@ public enum Voice {
         let options = lines(for: effect, tone: tone)
         guard !options.isEmpty else { return nil }
         return options[Int(UInt(bitPattern: seed) % UInt(options.count))]
+    }
+
+    public static func workingTooLongLine(minutes: Int, tone: ToneBand, seed: Int = 0) -> String {
+        let options = workingTooLongLines(minutes: minutes, tone: tone)
+        return options[Int(UInt(bitPattern: seed) % UInt(options.count))]
+    }
+
+    public static func workingTooLongLines(minutes: Int, tone: ToneBand) -> [String] {
+        switch tone {
+        case .polite:
+            return [
+                "You've been working for \(minutes) minutes straight. Consider taking a breather.",
+                "\(minutes) minutes without a break. A short pause will help you stay sharp."
+            ]
+        case .punchy:
+            return [
+                "\(minutes) minutes straight. Even machines cool down. Take a break.",
+                "Thou hast worked \(minutes) minutes unceasingly. Hydrate, no cap.",
+                "\(minutes) minutes without resting. Bold strategy. Take 5."
+            ]
+        case .strict:
+            return [
+                "\(minutes) minutes nonstop. Diminishing returns have arrived. Take a break.",
+                "Over \(minutes) minutes continuous work. Step away before quality drops."
+            ]
+        }
     }
 
     /// Every line Holt can say for an effect in a tone. All lines are original writing.
@@ -126,6 +153,13 @@ public enum Voice {
             case .punchy: return ["Resumed. Try to look busy.",
                                   "And we're back. Forsooth."]
             case .strict: return ["Resumed. Continue."]
+            }
+        case .extended:
+            switch tone {
+            case .polite: return ["Added 10 more minutes. Keep going while you have momentum."]
+            case .punchy: return ["Ten more minutes. Riding the wave, lowkey admirable.",
+                                  "Extended by 10 minutes. Strike whilst the iron is hot."]
+            case .strict: return ["Extended by 10 minutes. Make them count."]
             }
         }
     }
