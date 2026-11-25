@@ -1,0 +1,1353 @@
+[
+  {
+    "id": "morning_brief.polite.01",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "yesterday_left",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Good morning. {yesterday_left} from yesterday; {left} tasks planned today."
+  },
+  {
+    "id": "morning_brief.polite.02",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning plan: {left} tasks on deck. Start with one clean block."
+  },
+  {
+    "id": "morning_brief.polite.03",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning. Top priority today is '{task}'."
+  },
+  {
+    "id": "morning_brief.polite.04",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Yesterday logged {minutes}m of focus. Fresh slate today."
+  },
+  {
+    "id": "morning_brief.polite.05",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "A new dawn. {yesterday_left} tasks from yesterday seek closure."
+  },
+  {
+    "id": "morning_brief.polite.06",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Morning. {left} tasks today \u2014 main-character start awaits."
+  },
+  {
+    "id": "morning_brief.polite.07",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning. You're on a {streak}-day focus streak."
+  },
+  {
+    "id": "morning_brief.polite.08",
+    "trigger": "morning_brief",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Ready when you are. {left} tasks queued for today."
+  },
+  {
+    "id": "morning_brief.punchy.01",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "yesterday_left",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning: {yesterday_left} survived yesterday; {left} await you today."
+  },
+  {
+    "id": "morning_brief.punchy.02",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} todos on today's docket. Shrink it or ignore it?"
+  },
+  {
+    "id": "morning_brief.punchy.03",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning. '{task}' is your boss fight today."
+  },
+  {
+    "id": "morning_brief.punchy.04",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Yesterday's focus: {minutes}m. Today is an opportunity for revenge."
+  },
+  {
+    "id": "morning_brief.punchy.05",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Behold, {yesterday_left} unfinished tasks from yesteryear."
+  },
+  {
+    "id": "morning_brief.punchy.06",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak}-day streak active. Don't sell before noon."
+  },
+  {
+    "id": "morning_brief.punchy.07",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Morning. {left} tasks lined up. Time to eat, no cap."
+  },
+  {
+    "id": "morning_brief.punchy.08",
+    "trigger": "morning_brief",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Day started. '{task}' respectfully requests your attention."
+  },
+  {
+    "id": "morning_brief.strict.01",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "yesterday_left",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Morning brief: {yesterday_left} overdue, {left} scheduled today."
+  },
+  {
+    "id": "morning_brief.strict.02",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks assigned today. Begin the first block."
+  },
+  {
+    "id": "morning_brief.strict.03",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Primary objective: '{task}'. Start immediately."
+  },
+  {
+    "id": "morning_brief.strict.04",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Yesterday yielded {minutes}m. Exceed that today."
+  },
+  {
+    "id": "morning_brief.strict.05",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{yesterday_left} tasks neglected yesterday demand settlement."
+  },
+  {
+    "id": "morning_brief.strict.06",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak}-day streak on the line. Maintain discipline."
+  },
+  {
+    "id": "morning_brief.strict.07",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} tasks on deck. Lock in immediately."
+  },
+  {
+    "id": "morning_brief.strict.08",
+    "trigger": "morning_brief",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Open '{task}' and start the timer."
+  },
+  {
+    "id": "eod_summary.polite.01",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "planned",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Today: {done}/{planned} tasks done, {minutes}m focused. Rest well."
+  },
+  {
+    "id": "eod_summary.polite.02",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "minutes",
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "End of day: {minutes}m focused, score {score}/100. Nicely done."
+  },
+  {
+    "id": "eod_summary.polite.03",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} finished today, {left} left for tomorrow. Good effort."
+  },
+  {
+    "id": "eod_summary.polite.04",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Day's end: {minutes} minutes of honest labour recorded."
+  },
+  {
+    "id": "eod_summary.polite.05",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{done} tasks cleared today. Lowkey proud of the progress."
+  },
+  {
+    "id": "eod_summary.polite.06",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "count",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions and {minutes}m focused today. Clocking off?"
+  },
+  {
+    "id": "eod_summary.polite.07",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Today's focus score landed at {score}/100. See you tomorrow."
+  },
+  {
+    "id": "eod_summary.polite.08",
+    "trigger": "eod_summary",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Finished for today. '{task}' can wait until morning."
+  },
+  {
+    "id": "eod_summary.punchy.01",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "planned",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Day's verdict: {done}/{planned} tasks, {minutes}m focused. Solid."
+  },
+  {
+    "id": "eod_summary.punchy.02",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks conquered; {left} live to fight tomorrow."
+  },
+  {
+    "id": "eod_summary.punchy.03",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "minutes",
+      "distract"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m focused vs {distract}m distracted. Data never lies."
+  },
+  {
+    "id": "eod_summary.punchy.04",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "score"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Focus score: {score}/100. Honestly, could be worse."
+  },
+  {
+    "id": "eod_summary.punchy.05",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Twilight falls upon {minutes} minutes of focus. Adjourn."
+  },
+  {
+    "id": "eod_summary.punchy.06",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} completed sessions logged today. Respectable."
+  },
+  {
+    "id": "eod_summary.punchy.07",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Today ended with {skips} skipped tasks. Bold editing."
+  },
+  {
+    "id": "eod_summary.punchy.08",
+    "trigger": "eod_summary",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{done} tasks done. Go touch grass, you earned it."
+  },
+  {
+    "id": "eod_summary.strict.01",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "EOD report: {done}/{planned} tasks, {minutes}m focus."
+  },
+  {
+    "id": "eod_summary.strict.02",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Daily focus score: {score}/100. Review what slipped."
+  },
+  {
+    "id": "eod_summary.strict.03",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks incomplete at day's end. Rollover queued."
+  },
+  {
+    "id": "eod_summary.strict.04",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "minutes",
+      "distract"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focus: {minutes}m. Distractions: {distract}m. Tighten tomorrow."
+  },
+  {
+    "id": "eod_summary.strict.05",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions finished today. Record closed."
+  },
+  {
+    "id": "eod_summary.strict.06",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "done"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "The ledger closes at {done} completed duties."
+  },
+  {
+    "id": "eod_summary.strict.07",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{skips} tasks skipped today. Do not repeat tomorrow."
+  },
+  {
+    "id": "eod_summary.strict.08",
+    "trigger": "eod_summary",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Day wrapped at {minutes}m. Come back sharper tomorrow."
+  },
+  {
+    "id": "weekly_review.polite.01",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "hours",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Weekly recap: {hours}h focused and {done} tasks finished."
+  },
+  {
+    "id": "weekly_review.polite.02",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "best_hour",
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Best hour this week: {best_hour}. Longest streak: {streak} days."
+  },
+  {
+    "id": "weekly_review.polite.03",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Weekly average focus score: {score}/100. Ready for next week."
+  },
+  {
+    "id": "weekly_review.polite.04",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "This week: {done} tasks done, {skips} skipped. Steady growth."
+  },
+  {
+    "id": "weekly_review.polite.05",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "hours"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Seven days tallied: {hours} hours of dedicated effort."
+  },
+  {
+    "id": "weekly_review.polite.06",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{done} tasks wrapped this week. Lowkey solid run."
+  },
+  {
+    "id": "weekly_review.polite.07",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "hours",
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions totaling {hours}h this week. Nice rhythm."
+  },
+  {
+    "id": "weekly_review.polite.08",
+    "trigger": "weekly_review",
+    "tone": "polite",
+    "requires": [
+      "best_hour"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You focus best around {best_hour}. Protect that hour next week."
+  },
+  {
+    "id": "weekly_review.punchy.01",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "hours",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Week in review: {hours}h focused, {done} tasks buried."
+  },
+  {
+    "id": "weekly_review.punchy.02",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "best_hour"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Your peak hour is {best_hour}. Everything after 3 PM is vibes."
+  },
+  {
+    "id": "weekly_review.punchy.03",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "skips",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Avoidance award: '{task}' skipped {skips} times this week."
+  },
+  {
+    "id": "weekly_review.punchy.04",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "hours",
+      "distract"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{hours}h work vs {distract}m distraction. Numbers archived."
+  },
+  {
+    "id": "weekly_review.punchy.05",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak}-day streak this week. Main-character trajectory."
+  },
+  {
+    "id": "weekly_review.punchy.06",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Weekly chronicle: {done} duties discharged. Forsooth."
+  },
+  {
+    "id": "weekly_review.punchy.07",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Weekly score: {score}/100. Progress, slightly sarcastic."
+  },
+  {
+    "id": "weekly_review.punchy.08",
+    "trigger": "weekly_review",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} deep-work sessions this week. Keep the streak alive."
+  },
+  {
+    "id": "weekly_review.strict.01",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "hours",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Weekly audit: {hours}h focus, {done} tasks completed."
+  },
+  {
+    "id": "weekly_review.strict.02",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Weekly score: {score}/100. Inspect your distraction metrics."
+  },
+  {
+    "id": "weekly_review.strict.03",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "skips",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' was skipped {skips} times this week. Resolve it."
+  },
+  {
+    "id": "weekly_review.strict.04",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "best_hour"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Peak output at {best_hour}. Schedule hard work there."
+  },
+  {
+    "id": "weekly_review.strict.05",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "hours"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Seven days concluded: {hours} hours recorded."
+  },
+  {
+    "id": "weekly_review.strict.06",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Current streak: {streak} days. Do not break it."
+  },
+  {
+    "id": "weekly_review.strict.07",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {skips} skipped. Reduce skips next week."
+  },
+  {
+    "id": "weekly_review.strict.08",
+    "trigger": "weekly_review",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{count} sessions this week. Raise the bar Monday."
+  },
+  {
+    "id": "streak.polite.01",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} days in a row with focused work. Quietly impressive."
+  },
+  {
+    "id": "streak.polite.02",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak}-day streak and {done} tasks done today."
+  },
+  {
+    "id": "streak.polite.03",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{streak} consecutive days of diligence. Well kept."
+  },
+  {
+    "id": "streak.polite.04",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak}-day streak. Lowkey unstoppable."
+  },
+  {
+    "id": "streak.polite.05",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Day {streak} of your streak, with {minutes}m logged today."
+  },
+  {
+    "id": "streak.polite.06",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Consistency matters: {streak} straight days."
+  },
+  {
+    "id": "streak.polite.07",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You've shown up {streak} days running. Keep it gentle and steady."
+  },
+  {
+    "id": "streak.polite.08",
+    "trigger": "streak",
+    "tone": "polite",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak} days straight, no cap."
+  },
+  {
+    "id": "streak.punchy.01",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} days in a row. Frankly unsettling competence."
+  },
+  {
+    "id": "streak.punchy.02",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak}-day streak ({minutes}m today). Who are you and what happened?"
+  },
+  {
+    "id": "streak.punchy.03",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Forsooth, a {streak}-day streak. I am almost proud."
+  },
+  {
+    "id": "streak.punchy.04",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak} days in a row. You ate and left zero crumbs."
+  },
+  {
+    "id": "streak.punchy.05",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} straight days, {done} tasks done today. Show-off."
+  },
+  {
+    "id": "streak.punchy.06",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} days without missing. I'm keeping receipts."
+  },
+  {
+    "id": "streak.punchy.07",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak}-day streak. Main-character energy confirmed."
+  },
+  {
+    "id": "streak.punchy.08",
+    "trigger": "streak",
+    "tone": "punchy",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Day {streak}. Do not fumble tomorrow."
+  },
+  {
+    "id": "streak.strict.01",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak}-day streak. Maintain it."
+  },
+  {
+    "id": "streak.strict.02",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} consecutive days. Consistency is expected."
+  },
+  {
+    "id": "streak.strict.03",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Day {streak}: {minutes}m logged. Continue."
+  },
+  {
+    "id": "streak.strict.04",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{streak} days unbroken. Guard the chain."
+  },
+  {
+    "id": "streak.strict.05",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} days straight. One missed day erases it."
+  },
+  {
+    "id": "streak.strict.06",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{streak}-day streak. Do not fold."
+  },
+  {
+    "id": "streak.strict.07",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak",
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{streak} days, {done} tasks today. Acceptable."
+  },
+  {
+    "id": "streak.strict.08",
+    "trigger": "streak",
+    "tone": "strict",
+    "requires": [
+      "streak"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Streak at {streak}. Keep executing."
+  },
+  {
+    "id": "comeback.polite.01",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Welcome back \u2014 {minutes}m focused today after a quieter day."
+  },
+  {
+    "id": "comeback.polite.02",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks completed today. Strong comeback."
+  },
+  {
+    "id": "comeback.polite.03",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focus score climbed back to {score}/100 today."
+  },
+  {
+    "id": "comeback.polite.04",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "A worthy return: {minutes} minutes reclaimed today."
+  },
+  {
+    "id": "comeback.polite.05",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Bounce-back day: {done} tasks done. Love to see it."
+  },
+  {
+    "id": "comeback.polite.06",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions back on track today."
+  },
+  {
+    "id": "comeback.polite.07",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Yesterday was slow; today you already logged {minutes}m."
+  },
+  {
+    "id": "comeback.polite.08",
+    "trigger": "comeback",
+    "tone": "polite",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Back in rhythm at {score}/100."
+  },
+  {
+    "id": "comeback.punchy.01",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Plot twist: {minutes}m focused today. Comeback arc activated."
+  },
+  {
+    "id": "comeback.punchy.02",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "score"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Back to {score}/100. Lowkey legendary recovery."
+  },
+  {
+    "id": "comeback.punchy.03",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks cleared after yesterday's slump. Redemption."
+  },
+  {
+    "id": "comeback.punchy.04",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "From ashes to {minutes} minutes of focus. Well met."
+  },
+  {
+    "id": "comeback.punchy.05",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions today. Yesterday is officially forgiven."
+  },
+  {
+    "id": "comeback.punchy.06",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Score jumped to {score}/100. Holt approves quietly."
+  },
+  {
+    "id": "comeback.punchy.07",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{done} done today. You didn't sell the comeback."
+  },
+  {
+    "id": "comeback.punchy.08",
+    "trigger": "comeback",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m reclaimed. Momentum restored."
+  },
+  {
+    "id": "comeback.strict.01",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Course corrected: {minutes}m focused today."
+  },
+  {
+    "id": "comeback.strict.02",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Recovered to {score}/100. Hold this standard."
+  },
+  {
+    "id": "comeback.strict.03",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks completed after a weak day. Keep pace."
+  },
+  {
+    "id": "comeback.strict.04",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions logged today. Do not slip again."
+  },
+  {
+    "id": "comeback.strict.05",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes restored to the ledger."
+  },
+  {
+    "id": "comeback.strict.06",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Comeback logged ({score}/100). Maintain discipline."
+  },
+  {
+    "id": "comeback.strict.07",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Rebounded with {done} tasks. Stay locked in."
+  },
+  {
+    "id": "comeback.strict.08",
+    "trigger": "comeback",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Output resumed at {minutes}m."
+  }
+]

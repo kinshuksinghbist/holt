@@ -1,0 +1,1088 @@
+[
+  {
+    "id": "distraction.polite.01",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "site"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Looks like you drifted to {site}. Ready to head back?"
+  },
+  {
+    "id": "distraction.polite.02",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "site",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You're on {site} while '{task}' is active. Back to work?"
+  },
+  {
+    "id": "distraction.polite.03",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "site",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on {site} during a work session. Need a reset?"
+  },
+  {
+    "id": "distraction.polite.04",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "app"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{app} isn't part of your focus plan. Return when ready."
+  },
+  {
+    "id": "distraction.polite.05",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "site"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast wandered unto {site}. Gently return to thy task."
+  },
+  {
+    "id": "distraction.polite.06",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "site"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Caught drifting to {site}. Lowkey time to switch back."
+  },
+  {
+    "id": "distraction.polite.07",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Friendly reminder: '{task}' is still running on the timer."
+  },
+  {
+    "id": "distraction.polite.08",
+    "trigger": "distraction",
+    "tone": "polite",
+    "requires": [
+      "app",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m spent in {app} during work. Back to focus?"
+  },
+  {
+    "id": "distraction.punchy.01",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{site} during deep work. It's giving procrastination."
+  },
+  {
+    "id": "distraction.punchy.02",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You planned '{task}' and then opened {site}. Bold choice."
+  },
+  {
+    "id": "distraction.punchy.03",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on {site}. Deep work is weeping quietly."
+  },
+  {
+    "id": "distraction.punchy.04",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "app"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "A wild detour to {app} appeared. Forsooth, retreat."
+  },
+  {
+    "id": "distraction.punchy.05",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{site} is not on the task list. I checked twice."
+  },
+  {
+    "id": "distraction.punchy.06",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "app",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' watches silently as you browse {app}."
+  },
+  {
+    "id": "distraction.punchy.07",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Caught in 4K on {site}. Back to work."
+  },
+  {
+    "id": "distraction.punchy.08",
+    "trigger": "distraction",
+    "tone": "punchy",
+    "requires": [
+      "site",
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes squandered upon {site}. Return forthwith."
+  },
+  {
+    "id": "distraction.strict.01",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "site"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{site} detected during a work session. Close it now."
+  },
+  {
+    "id": "distraction.strict.02",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "site",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Leave {site} and finish '{task}'."
+  },
+  {
+    "id": "distraction.strict.03",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "site",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m lost to {site}. End this detour immediately."
+  },
+  {
+    "id": "distraction.strict.04",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "app"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{app} is marked distracting. Return to work."
+  },
+  {
+    "id": "distraction.strict.05",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "site"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Flee {site} at once. Thy work session bleeds."
+  },
+  {
+    "id": "distraction.strict.06",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "app",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes wasted in {app}. Correct course."
+  },
+  {
+    "id": "distraction.strict.07",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "site"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Close {site}. Do not throw this session."
+  },
+  {
+    "id": "distraction.strict.08",
+    "trigger": "distraction",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Return to '{task}' immediately."
+  },
+  {
+    "id": "yt_entertainment.polite.01",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "video"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Watching '{video}' during deep work. Want to save it for break?"
+  },
+  {
+    "id": "yt_entertainment.polite.02",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "site",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on YouTube entertainment. Back to your task?"
+  },
+  {
+    "id": "yt_entertainment.polite.03",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "video",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{video}' popped up while working on '{task}'. Save for later?"
+  },
+  {
+    "id": "yt_entertainment.polite.04",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "YouTube has taken {minutes}m of this session. Ready to return?"
+  },
+  {
+    "id": "yt_entertainment.polite.05",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "video"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{video}' beguiles thee. Save such amusements for thy break."
+  },
+  {
+    "id": "yt_entertainment.polite.06",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "video"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "'{video}' can wait until break. Lowkey a trap."
+  },
+  {
+    "id": "yt_entertainment.polite.07",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "site"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Entertainment video detected during focus. Pause or return?"
+  },
+  {
+    "id": "yt_entertainment.polite.08",
+    "trigger": "yt_entertainment",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' is waiting behind that YouTube tab."
+  },
+  {
+    "id": "yt_entertainment.punchy.01",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "video"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Deep work interrupted by '{video}'. Bold. Wrong, but bold."
+  },
+  {
+    "id": "yt_entertainment.punchy.02",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "video",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m into '{video}'. Truly a masterclass in avoidance."
+  },
+  {
+    "id": "yt_entertainment.punchy.03",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "video",
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Skipped '{task}' for '{video}'. It's giving delusion."
+  },
+  {
+    "id": "yt_entertainment.punchy.04",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "video"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou forsakest labour for '{video}'. A grievous detour."
+  },
+  {
+    "id": "yt_entertainment.punchy.05",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m of YouTube entertainment during deep work. Noted."
+  },
+  {
+    "id": "yt_entertainment.punchy.06",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "video"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "'{video}' during a focus block? Not very demure, no cap."
+  },
+  {
+    "id": "yt_entertainment.punchy.07",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "YouTube wins another round against '{task}'. Fight back."
+  },
+  {
+    "id": "yt_entertainment.punchy.08",
+    "trigger": "yt_entertainment",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes fed to the algorithm. Hie thee hence."
+  },
+  {
+    "id": "yt_entertainment.strict.01",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "video"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Close '{video}'. YouTube entertainment is forbidden in work blocks."
+  },
+  {
+    "id": "yt_entertainment.strict.02",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "video",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m wasted on '{video}'. Terminate the tab."
+  },
+  {
+    "id": "yt_entertainment.strict.03",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "video",
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{video}' is not '{task}'. Return to work now."
+  },
+  {
+    "id": "yt_entertainment.strict.04",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m lost to YouTube. Unacceptable."
+  },
+  {
+    "id": "yt_entertainment.strict.05",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "video"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Banish '{video}' from thy screen immediately."
+  },
+  {
+    "id": "yt_entertainment.strict.06",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Close YouTube. Resume '{task}'."
+  },
+  {
+    "id": "yt_entertainment.strict.07",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m on YouTube mid-session. Lock in immediately."
+  },
+  {
+    "id": "yt_entertainment.strict.08",
+    "trigger": "yt_entertainment",
+    "tone": "strict",
+    "requires": [
+      "video"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Entertainment video '{video}' logged as procrastination."
+  },
+  {
+    "id": "no_session_active.polite.01",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You have {left} todos waiting today. Want to start a 25m block?"
+  },
+  {
+    "id": "no_session_active.polite.02",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Active at your Mac \u2014 ready to start '{task}'?"
+  },
+  {
+    "id": "no_session_active.polite.03",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "left",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks left and {minutes}m logged so far. Start a session?"
+  },
+  {
+    "id": "no_session_active.polite.04",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' awaits thy hand. Shall we set the hourglass?"
+  },
+  {
+    "id": "no_session_active.polite.05",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} todos sitting there. Lowkey a great moment to start."
+  },
+  {
+    "id": "no_session_active.polite.06",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {left} to go. One quick 25m block?"
+  },
+  {
+    "id": "no_session_active.polite.07",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "app"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Working in {app}? Start the timer so your focus counts."
+  },
+  {
+    "id": "no_session_active.polite.08",
+    "trigger": "no_session_active",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Turn this activity into counted focus on '{task}'."
+  },
+  {
+    "id": "no_session_active.punchy.01",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Active on your Mac with {left} todos untouched. Bold choice."
+  },
+  {
+    "id": "no_session_active.punchy.02",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' sits in the queue while no timer runs. Start one."
+  },
+  {
+    "id": "no_session_active.punchy.03",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} todos left and zero timers running. Start 25m, no cap."
+  },
+  {
+    "id": "no_session_active.punchy.04",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou labourest without the clock; {minutes}m logged thus far."
+  },
+  {
+    "id": "no_session_active.punchy.05",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "If you're working on '{task}', you might as well get credit."
+  },
+  {
+    "id": "no_session_active.punchy.06",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {left} untouched. The clock feels neglected."
+  },
+  {
+    "id": "no_session_active.punchy.07",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "app"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Busy in {app} with no session. Should Holt start counting?"
+  },
+  {
+    "id": "no_session_active.punchy.08",
+    "trigger": "no_session_active",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Forsooth, {left} tasks remain unstarted. Engage the timer."
+  },
+  {
+    "id": "no_session_active.strict.01",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks pending. No session active. Start now."
+  },
+  {
+    "id": "no_session_active.strict.02",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Start a focus session for '{task}'."
+  },
+  {
+    "id": "no_session_active.strict.03",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Unrecorded time does not build streaks. {left} tasks wait."
+  },
+  {
+    "id": "no_session_active.strict.04",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Today's focus stands at {minutes}m. Start a block."
+  },
+  {
+    "id": "no_session_active.strict.05",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Set the clock upon '{task}' without further delay."
+  },
+  {
+    "id": "no_session_active.strict.06",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} done. Begin another session."
+  },
+  {
+    "id": "no_session_active.strict.07",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} tasks left. Start the timer. Stop stalling."
+  },
+  {
+    "id": "no_session_active.strict.08",
+    "trigger": "no_session_active",
+    "tone": "strict",
+    "requires": [
+      "app"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Active in {app} without a session. Start 25 minutes."
+  },
+  {
+    "id": "hourly_reminder.polite.01",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Check-in: {done} tasks done, {left} left today."
+  },
+  {
+    "id": "hourly_reminder.polite.02",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "left",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m focused so far. {done} done, {left} remaining."
+  },
+  {
+    "id": "hourly_reminder.polite.03",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{yesterday_left} tasks carried over from yesterday still await attention."
+  },
+  {
+    "id": "hourly_reminder.polite.04",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Gentle check-in: '{task}' is at the top of your list."
+  },
+  {
+    "id": "hourly_reminder.polite.05",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Hourly dispatch: {done} tasks accomplished thus far."
+  },
+  {
+    "id": "hourly_reminder.polite.06",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Check-in: {left} todos left. Lowkey doable."
+  },
+  {
+    "id": "hourly_reminder.polite.07",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} focused minutes recorded today. Keep a steady pace."
+  },
+  {
+    "id": "hourly_reminder.polite.08",
+    "trigger": "hourly_reminder",
+    "tone": "polite",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Today's focus score is {score}/100. Ready for another block?"
+  },
+  {
+    "id": "hourly_reminder.punchy.01",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Report: {done} done, {left} untouched. Balance hangs in the air."
+  },
+  {
+    "id": "hourly_reminder.punchy.02",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {left} left, {skips} skipped. Impressive consistency."
+  },
+  {
+    "id": "hourly_reminder.punchy.03",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{yesterday_left} tasks survived yesterday and are now today's problem."
+  },
+  {
+    "id": "hourly_reminder.punchy.04",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' has been carried {days} days. At this point it's furniture."
+  },
+  {
+    "id": "hourly_reminder.punchy.05",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "minutes",
+      "distract"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m focused vs {distract}m distracted. Choose wisely."
+  },
+  {
+    "id": "hourly_reminder.punchy.06",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} todos still breathing. Lock in for 25m, no cap."
+  },
+  {
+    "id": "hourly_reminder.punchy.07",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Hourly reckoning: {done} completed. Yet the list endures."
+  },
+  {
+    "id": "hourly_reminder.punchy.08",
+    "trigger": "hourly_reminder",
+    "tone": "punchy",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Current focus score: {score}/100. Room for character growth."
+  },
+  {
+    "id": "hourly_reminder.strict.01",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Hourly audit: {done} done, {left} incomplete."
+  },
+  {
+    "id": "hourly_reminder.strict.02",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "yesterday_left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{yesterday_left} tasks missed yesterday remain unresolved."
+  },
+  {
+    "id": "hourly_reminder.strict.03",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focus total: {minutes}m. Insufficient unless you intend to stop."
+  },
+  {
+    "id": "hourly_reminder.strict.04",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' remains unfinished. Execute."
+  },
+  {
+    "id": "hourly_reminder.strict.05",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "score"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focus score: {score}/100. Raise it."
+  },
+  {
+    "id": "hourly_reminder.strict.06",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{left} duties remain. Delay no longer."
+  },
+  {
+    "id": "hourly_reminder.strict.07",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Completion stands at {done}/{planned}. Increase output."
+  },
+  {
+    "id": "hourly_reminder.strict.08",
+    "trigger": "hourly_reminder",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{left} tasks still open. Do not fumble the day."
+  }
+]

@@ -13,12 +13,22 @@ enum NotificationCategory: String, CaseIterable {
     case workingTooLong = "holt.working-too-long"
     case quickAdd = "holt.quick-add"
     case procrastination = "holt.procrastination"
+    case noSessionPending = "holt.no-session-pending"
+    case autoSession = "holt.auto-session"
+    case reminder = "holt.reminder"
+    case summary = "holt.summary"
 
     static let actionPrefix = "holt.action."
     static let snoozeTooLongID = "holt.custom.snooze-too-long"
     static let quickAddTextID = "holt.custom.quick-add-text"
     static let backToWorkID = "holt.custom.back-to-work"
     static let thisIsForWorkID = "holt.custom.this-is-for-work"
+    static let start25ID = "holt.custom.start-25"
+    static let start50ID = "holt.custom.start-50"
+    static let snoozeNoSessionID = "holt.custom.snooze-no-session"
+    static let cancelAutoSessionID = "holt.custom.cancel-auto-session"
+    static let snoozeAutoSessionID = "holt.custom.snooze-auto-session"
+    static let openHoltID = "holt.custom.open-holt"
 
     var actionDefinitions: [(id: String, title: String)] {
         switch self {
@@ -56,6 +66,27 @@ enum NotificationCategory: String, CaseIterable {
                 (Self.backToWorkID, "Back to work"),
                 (Self.thisIsForWorkID, "This is for work"),
             ]
+        case .noSessionPending:
+            return [
+                (Self.start25ID, "Start 25 m"),
+                (Self.start50ID, "Start 50 m"),
+                (Self.snoozeNoSessionID, "Snooze 15 m"),
+                (Self.identifier(for: .takeBreak), "I'm on a break"),
+            ]
+        case .autoSession:
+            return [
+                (Self.cancelAutoSessionID, "Cancel"),
+                (Self.snoozeAutoSessionID, "Not now (1 h)"),
+            ]
+        case .reminder:
+            return [
+                (Self.start25ID, "Start session"),
+                (Self.openHoltID, "Open todos"),
+            ]
+        case .summary:
+            return [
+                (Self.openHoltID, "Open Holt"),
+            ]
         }
     }
 
@@ -91,10 +122,8 @@ enum NotificationCategory: String, CaseIterable {
 final class Notifier {
     static let shared = Notifier()
 
-    /// The center holds its delegate weakly, so keep it alive here.
     private let presenter = NotificationPresenter()
 
-    /// `UNUserNotificationCenter` crashes outside an app bundle (e.g. `swift run`), so guard on it.
     private var center: UNUserNotificationCenter? {
         Bundle.main.bundleIdentifier == nil ? nil : UNUserNotificationCenter.current()
     }
@@ -111,28 +140,31 @@ final class Notifier {
             )
         }
         center.setNotificationCategories(Set(categories))
-        // Callbacks arrive on a background queue: keep them @Sendable (non-main-actor).
         center.requestAuthorization(options: [.alert, .sound]) { @Sendable _, _ in }
     }
 
-    func post(title: String, body: String, category: NotificationCategory? = nil) {
+    func post(
+        title: String,
+        body: String,
+        category: NotificationCategory? = nil,
+        messageId: Int64? = nil
+    ) {
         guard let center else { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         if let category { content.categoryIdentifier = category.rawValue }
+        if let messageId { content.userInfo = ["holt_message_id": messageId] }
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         center.add(request) { @Sendable _ in }
     }
 
-    /// Removes Holt's notifications from Notification Center so stale action buttons can't
-    /// act on a later session.
     func clearDelivered() {
         center?.removeAllDeliveredNotifications()
     }
 }
 
-/// Shows notifications even while Holt is frontmost, and routes action buttons to the model.
+/// Shows notifications even while Holt is frontmost, and routes action buttons + outcomes to the model.
 final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -147,7 +179,9 @@ final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
     ) async {
         let identifier = response.actionIdentifier
         let inputText = (response as? UNTextInputNotificationResponse)?.userText
+        let messageId = response.notification.request.content.userInfo["holt_message_id"] as? Int64
         await MainActor.run {
+            AppModel.shared.recordNotificationOutcome(messageId: messageId, actionIdentifier: identifier)
             if identifier == NotificationCategory.quickAddTextID, let inputText {
                 AppModel.shared.handleQuickAddNotification(text: inputText)
             } else {

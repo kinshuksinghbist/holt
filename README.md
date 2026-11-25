@@ -12,7 +12,7 @@ Everything stays on your Mac: one local SQLite database, no account, no cloud.
 
 ## Status
 
-**Milestone M5 complete** (M6–M7 next). What works today:
+**Milestone M6 complete** (M7 next). What works today:
 
 - **Jelly timer** — grab the jelly and stretch it to pick a session length
   (5–60 min in 5s, then up to 3 h); it ticks with sound and trackpad haptics at

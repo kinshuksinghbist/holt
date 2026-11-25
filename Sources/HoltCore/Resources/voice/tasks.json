@@ -1,0 +1,814 @@
+[
+  {
+    "id": "task_done.polite.01",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Completed '{task}'. Nicely done."
+  },
+  {
+    "id": "task_done.polite.02",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' checked off. {left} remaining today."
+  },
+  {
+    "id": "task_done.polite.03",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks done today. Steady progress."
+  },
+  {
+    "id": "task_done.polite.04",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' is accomplished. Well wrought."
+  },
+  {
+    "id": "task_done.polite.05",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "'{task}' done. Lowkey effortless."
+  },
+  {
+    "id": "task_done.polite.06",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} complete for today."
+  },
+  {
+    "id": "task_done.polite.07",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Finished '{task}' with {minutes}m of focused work."
+  },
+  {
+    "id": "task_done.polite.08",
+    "trigger": "task_done",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "One less thing: '{task}' is complete."
+  },
+  {
+    "id": "task_done.punchy.01",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' is dead. Long live the next task."
+  },
+  {
+    "id": "task_done.punchy.02",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' eliminated. {left} suspects remain."
+  },
+  {
+    "id": "task_done.punchy.03",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{done} tasks done. You ate that, no cap."
+  },
+  {
+    "id": "task_done.punchy.04",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' vanquished. Huzzah, quietly."
+  },
+  {
+    "id": "task_done.punchy.05",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' took {minutes}m and finally surrendered."
+  },
+  {
+    "id": "task_done.punchy.06",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} down. Actually getting somewhere."
+  },
+  {
+    "id": "task_done.punchy.07",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Checked off '{task}'. Main-character productivity."
+  },
+  {
+    "id": "task_done.punchy.08",
+    "trigger": "task_done",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Task cleared. {left} remaining in the queue."
+  },
+  {
+    "id": "task_done.strict.01",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' marked done. Proceed to the next."
+  },
+  {
+    "id": "task_done.strict.02",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' complete. {left} tasks remain."
+  },
+  {
+    "id": "task_done.strict.03",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done}/{planned} done. Continue."
+  },
+  {
+    "id": "task_done.strict.04",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' fulfilled. Next duty awaits."
+  },
+  {
+    "id": "task_done.strict.05",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Count: {done} completed. Do not slow down."
+  },
+  {
+    "id": "task_done.strict.06",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "'{task}' cleared. Lock in on the next one."
+  },
+  {
+    "id": "task_done.strict.07",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' finished in {minutes}m. Acceptable."
+  },
+  {
+    "id": "task_done.strict.08",
+    "trigger": "task_done",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks left. Next."
+  },
+  {
+    "id": "task_skipped.polite.01",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skipped '{task}' for now. You can revisit it tomorrow."
+  },
+  {
+    "id": "task_skipped.polite.02",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' skipped ({skips} times). Maybe break it down smaller?"
+  },
+  {
+    "id": "task_skipped.polite.03",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' set aside for now. Revisit with fresh eyes."
+  },
+  {
+    "id": "task_skipped.polite.04",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Skipped '{task}'. Tomorrow's problem, respectfully."
+  },
+  {
+    "id": "task_skipped.polite.05",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Moved past that one. {left} tasks still on today's list."
+  },
+  {
+    "id": "task_skipped.polite.06",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Okay, '{task}' is paused for today."
+  },
+  {
+    "id": "task_skipped.polite.07",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skipped {skips} times \u2014 consider if this task is still needed."
+  },
+  {
+    "id": "task_skipped.polite.08",
+    "trigger": "task_skipped",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Noted: skipping '{task}' today."
+  },
+  {
+    "id": "task_skipped.punchy.01",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skipped '{task}' {skips} times. Not a task; a recurring character flaw."
+  },
+  {
+    "id": "task_skipped.punchy.02",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' skipped again. It sends its regards."
+  },
+  {
+    "id": "task_skipped.punchy.03",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Skipped '{task}'. It's giving avoidance, no cap."
+  },
+  {
+    "id": "task_skipped.punchy.04",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast dodged '{task}' once more. Most artful."
+  },
+  {
+    "id": "task_skipped.punchy.05",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' dodged {skips}\u00d7. At least be honest and drop it."
+  },
+  {
+    "id": "task_skipped.punchy.06",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skipped. {left} tasks left to potentially ignore."
+  },
+  {
+    "id": "task_skipped.punchy.07",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' lives to be skipped another day."
+  },
+  {
+    "id": "task_skipped.punchy.08",
+    "trigger": "task_skipped",
+    "tone": "punchy",
+    "requires": [
+      "skips"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{skips} skips deep. Bold strategy."
+  },
+  {
+    "id": "task_skipped.strict.01",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' skipped {skips} times. Complete it or delete it."
+  },
+  {
+    "id": "task_skipped.strict.02",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' skipped. Avoidance is logged."
+  },
+  {
+    "id": "task_skipped.strict.03",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "'{task}' deferred again. Dereliction noted."
+  },
+  {
+    "id": "task_skipped.strict.04",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skip count: {skips}. Stop negotiating with yourself."
+  },
+  {
+    "id": "task_skipped.strict.05",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Skipping '{task}' does not remove the obligation."
+  },
+  {
+    "id": "task_skipped.strict.06",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Task skipped. {left} remain. Finish them."
+  },
+  {
+    "id": "task_skipped.strict.07",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Skipped '{task}' again. Stop selling."
+  },
+  {
+    "id": "task_skipped.strict.08",
+    "trigger": "task_skipped",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "skips"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' deferred {skips}\u00d7. Unacceptable pattern."
+  },
+  {
+    "id": "rollover.polite.01",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} unfinished tasks rolled over to today. Pick what still matters."
+  },
+  {
+    "id": "rollover.polite.02",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' carried over {days} days. Worth tackling first?"
+  },
+  {
+    "id": "rollover.polite.03",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{count} tasks crossed the night unto today."
+  },
+  {
+    "id": "rollover.polite.04",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{count} leftovers carried over. Fresh day to clear them."
+  },
+  {
+    "id": "rollover.polite.05",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' rolled over from yesterday. Ready to start?"
+  },
+  {
+    "id": "rollover.polite.06",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "count",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} rolled over, {left} total for today."
+  },
+  {
+    "id": "rollover.polite.07",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Some tasks have waited {days} days. Small steps work."
+  },
+  {
+    "id": "rollover.polite.08",
+    "trigger": "rollover",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Carried {count} tasks forward into today's plan."
+  },
+  {
+    "id": "rollover.punchy.01",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} tasks survived the night and are now today's problem."
+  },
+  {
+    "id": "rollover.punchy.02",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' carried {days} days. It qualifies for residency."
+  },
+  {
+    "id": "rollover.punchy.03",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{count} ghosts of yesterday's plan haunt thy morning."
+  },
+  {
+    "id": "rollover.punchy.04",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{count} tasks rolled over. Main-character backlog."
+  },
+  {
+    "id": "rollover.punchy.05",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "days"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "'{task}' is {days} days old. Lowkey vintage."
+  },
+  {
+    "id": "rollover.punchy.06",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} leftovers rolled forward. Time to evict a few."
+  },
+  {
+    "id": "rollover.punchy.07",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' refuses to vanish on its own."
+  },
+  {
+    "id": "rollover.punchy.08",
+    "trigger": "rollover",
+    "tone": "punchy",
+    "requires": [
+      "days"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{days} days carried. Thou hast tested patience itself."
+  },
+  {
+    "id": "rollover.strict.01",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} unfinished tasks rolled over. Clear the backlog."
+  },
+  {
+    "id": "rollover.strict.02",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' carried {days} days. Finish it first."
+  },
+  {
+    "id": "rollover.strict.03",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} overdue items added to today's ledger."
+  },
+  {
+    "id": "rollover.strict.04",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "days"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Rollover age: {days} days. Execute or abandon."
+  },
+  {
+    "id": "rollover.strict.05",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{count} unfulfilled duties carried forward."
+  },
+  {
+    "id": "rollover.strict.06",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' rolled over again. Address it now."
+  },
+  {
+    "id": "rollover.strict.07",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{count} carryovers. Lock in and clear them."
+  },
+  {
+    "id": "rollover.strict.08",
+    "trigger": "rollover",
+    "tone": "strict",
+    "requires": [
+      "count",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} carried; {left} total due today."
+  }
+]

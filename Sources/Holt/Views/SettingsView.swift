@@ -9,6 +9,7 @@ struct SettingsView: View {
     @State private var dataStatusMessage: String?
     @State private var confirmResetStats = false
     @State private var showRulesEditor = false
+    @State private var showFactSheet = false
     @State private var extensionStatus: String?
 
     var body: some View {
@@ -96,6 +97,93 @@ struct SettingsView: View {
 
             Section("Holt") {
                 ToneSlider(model: model)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("Slang mix").font(.caption.weight(.medium))
+                        Spacer()
+                        Text(model.settings.slangMix < 0.34 ? "Archaic" : (model.settings.slangMix > 0.66 ? "Gen-Z" : "Balanced"))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    Slider(value: $model.settings.slangMix, in: 0...1)
+                    HStack {
+                        Text("Archaic")
+                        Spacer()
+                        Text("Balanced")
+                        Spacer()
+                        Text("Gen-Z")
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                }
+                Toggle("Allow profanity in Holt's lines", isOn: $model.settings.allowProfanity)
+                HStack {
+                    Button(model.isQuietSnoozed ? "End quiet hour" : "Holt, quiet for 1 h") {
+                        model.toggleSnoozeAllOneHour()
+                    }
+                    Button("What Holt knows…") {
+                        showFactSheet = true
+                    }
+                }
+            }
+
+            Section("Notifications & schedules") {
+                Toggle("Periodic check-in reminders", isOn: $model.settings.enableReminders)
+                Picker("Reminder cadence", selection: $model.settings.reminderCadence) {
+                    ForEach(ReminderCadence.allCases, id: \.self) { c in
+                        Text(c.title).tag(c)
+                    }
+                }
+                .disabled(!model.settings.enableReminders)
+                Stepper(value: $model.settings.maxNudgesPerHour, in: 1...20) {
+                    LabeledContent("Max nudges per hour", value: "\(model.settings.maxNudgesPerHour)")
+                }
+                Toggle("Quiet hours", isOn: $model.settings.quietHoursEnabled)
+                if model.settings.quietHoursEnabled {
+                    Stepper(value: $model.settings.quietStartHour, in: 0...23) {
+                        LabeledContent("Quiet starts", value: String(format: "%02d:00", model.settings.quietStartHour))
+                    }
+                    Stepper(value: $model.settings.quietEndHour, in: 0...23) {
+                        LabeledContent("Quiet ends", value: String(format: "%02d:00", model.settings.quietEndHour))
+                    }
+                }
+                Toggle("Respect macOS Focus / Do Not Disturb", isOn: $model.settings.respectSystemFocus)
+                Toggle("Morning brief", isOn: $model.settings.enableMorningBrief)
+                if model.settings.enableMorningBrief {
+                    Stepper(value: $model.settings.morningBriefHour, in: 4...12) {
+                        LabeledContent("Morning brief hour", value: String(format: "%02d:00", model.settings.morningBriefHour))
+                    }
+                }
+                Toggle("End-of-day summary", isOn: $model.settings.enableEODSummary)
+                if model.settings.enableEODSummary {
+                    Stepper(value: $model.settings.eodSummaryHour, in: 15...23) {
+                        LabeledContent("Evening summary hour", value: String(format: "%02d:00", model.settings.eodSummaryHour))
+                    }
+                }
+                Toggle("Weekly review (Sundays)", isOn: $model.settings.enableWeeklyReview)
+            }
+
+            Section("Auto-sessions") {
+                Toggle("Start session when continuous work is detected", isOn: $model.settings.autoSessionDetectedWork)
+                ForEach($model.settings.scheduledFocusBlocks) { $block in
+                    HStack {
+                        Toggle(block.label, isOn: $block.isEnabled)
+                        Spacer()
+                        Text(String(format: "%02d:%02d–%02d:%02d", block.startHour, block.startMinute, block.endHour, block.endMinute))
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                        Button {
+                            model.settings.scheduledFocusBlocks.removeAll { $0.id == block.id }
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+                Button("Add weekday 10:00–12:00 focus block") {
+                    model.settings.scheduledFocusBlocks.append(FocusBlockSchedule())
+                }
+                .font(.caption)
             }
 
             Section("Tracking & browsers") {
@@ -199,6 +287,9 @@ struct SettingsView: View {
         .onChange(of: model.launchAtLogin) { model.applyLaunchAtLogin() }
         .sheet(isPresented: $showRulesEditor) {
             RulesEditorSheet(model: model)
+        }
+        .sheet(isPresented: $showFactSheet) {
+            FactSheetDebugSheet(model: model)
         }
         .confirmationDialog(
             "Reset all session & tracking stats?",
@@ -436,5 +527,47 @@ private struct RulesEditorSheet: View {
         }
         .padding(18)
         .frame(width: 580)
+    }
+}
+
+private struct FactSheetDebugSheet: View {
+    let model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var jsonText = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("What Holt knows (FactSheet)").font(.title3.weight(.semibold))
+                Spacer()
+                Button("Refresh") { load() }
+                Button("Done") { dismiss() }
+            }
+            ScrollView {
+                Text(jsonText)
+                    .font(.system(.caption, design: .monospaced))
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
+            }
+            .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 10))
+            .frame(minHeight: 360)
+        }
+        .padding(18)
+        .frame(width: 600)
+        .onAppear { load() }
+    }
+
+    private func load() {
+        guard let sheet = model.buildCurrentFactSheet() else {
+            jsonText = "{}"
+            return
+        }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        if let data = try? encoder.encode(sheet) {
+            jsonText = String(decoding: data, as: UTF8.self)
+        }
     }
 }

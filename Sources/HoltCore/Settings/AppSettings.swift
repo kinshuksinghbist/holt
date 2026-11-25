@@ -26,6 +26,17 @@ public enum YouTubePolicy: String, Codable, Sendable, CaseIterable {
     }
 }
 
+public enum ReminderCadence: String, Codable, Sendable, CaseIterable {
+    case hourly, varied
+
+    public var title: String {
+        switch self {
+        case .hourly: "Hourly"
+        case .varied: "Varied (40–90m)"
+        }
+    }
+}
+
 /// A global hotkey using Carbon virtual keyCode + Carbon modifier flags.
 public struct HotkeyShortcut: Codable, Equatable, Sendable {
     public static let cmdMask: UInt32 = 1 << 8
@@ -152,6 +163,25 @@ public struct AppSettings: Equatable, Sendable {
     public var screenIntervalMinutes = 3
     public var screenExclusions: [String] = []
 
+    // Voice, nudges, schedules & auto-sessions (M6)
+    public var allowProfanity = false
+    public var slangMix = 0.5
+    public var enableReminders = true
+    public var reminderCadence: ReminderCadence = .varied
+    public var maxNudgesPerHour = 4
+    public var quietHoursEnabled = true
+    public var quietStartHour = 22
+    public var quietEndHour = 8
+    public var respectSystemFocus = true
+    public var enableMorningBrief = true
+    public var morningBriefHour = 9
+    public var enableEODSummary = true
+    public var eodSummaryHour = 18
+    public var enableWeeklyReview = true
+    public var weeklyReviewWeekday = 1 // Sunday
+    public var autoSessionDetectedWork = false
+    public var scheduledFocusBlocks: [FocusBlockSchedule] = []
+
     public init() {}
 
     public var timerConfig: TimerConfig {
@@ -183,6 +213,12 @@ public struct AppSettings: Equatable, Sendable {
         s.workingTooLongMinutes = Self.clamp(workingTooLongMinutes, Self.workingTooLongRange)
         s.retentionDays = Self.clamp(retentionDays, Self.retentionRange)
         s.screenIntervalMinutes = Self.clamp(screenIntervalMinutes, Self.screenIntervalRange)
+        s.maxNudgesPerHour = Self.clamp(maxNudgesPerHour, 1...20)
+        s.quietStartHour = Self.clamp(quietStartHour, 0...23)
+        s.quietEndHour = Self.clamp(quietEndHour, 0...23)
+        s.morningBriefHour = Self.clamp(morningBriefHour, 4...12)
+        s.eodSummaryHour = Self.clamp(eodSummaryHour, 15...23)
+        s.slangMix = min(max(slangMix.isFinite ? slangMix : 0.5, 0.0), 1.0)
         s.soundVolume = min(max(soundVolume.isFinite ? soundVolume : 0.8, 0.0), 1.0)
         return s
     }
@@ -203,6 +239,11 @@ extension AppSettings: Codable {
         case trackApps, trackWindowTitles, trackBrowsers, trackYouTube, youtubePolicy
         case retentionDays, chromeExtensionId
         case enableScreenUnderstanding, screenIntervalMinutes, screenExclusions
+        case allowProfanity, slangMix, enableReminders, reminderCadence, maxNudgesPerHour
+        case quietHoursEnabled, quietStartHour, quietEndHour, respectSystemFocus
+        case enableMorningBrief, morningBriefHour, enableEODSummary, eodSummaryHour
+        case enableWeeklyReview, weeklyReviewWeekday
+        case autoSessionDetectedWork, scheduledFocusBlocks
     }
 
     public init(from decoder: Decoder) throws {
@@ -239,5 +280,22 @@ extension AppSettings: Codable {
         enableScreenUnderstanding = try c.decodeIfPresent(Bool.self, forKey: .enableScreenUnderstanding) ?? d.enableScreenUnderstanding
         screenIntervalMinutes = try c.decodeIfPresent(Int.self, forKey: .screenIntervalMinutes) ?? d.screenIntervalMinutes
         screenExclusions = try c.decodeIfPresent([String].self, forKey: .screenExclusions) ?? d.screenExclusions
+        allowProfanity = try c.decodeIfPresent(Bool.self, forKey: .allowProfanity) ?? d.allowProfanity
+        slangMix = try c.decodeIfPresent(Double.self, forKey: .slangMix) ?? d.slangMix
+        enableReminders = try c.decodeIfPresent(Bool.self, forKey: .enableReminders) ?? d.enableReminders
+        reminderCadence = try c.decodeIfPresent(ReminderCadence.self, forKey: .reminderCadence) ?? d.reminderCadence
+        maxNudgesPerHour = try c.decodeIfPresent(Int.self, forKey: .maxNudgesPerHour) ?? d.maxNudgesPerHour
+        quietHoursEnabled = try c.decodeIfPresent(Bool.self, forKey: .quietHoursEnabled) ?? d.quietHoursEnabled
+        quietStartHour = try c.decodeIfPresent(Int.self, forKey: .quietStartHour) ?? d.quietStartHour
+        quietEndHour = try c.decodeIfPresent(Int.self, forKey: .quietEndHour) ?? d.quietEndHour
+        respectSystemFocus = try c.decodeIfPresent(Bool.self, forKey: .respectSystemFocus) ?? d.respectSystemFocus
+        enableMorningBrief = try c.decodeIfPresent(Bool.self, forKey: .enableMorningBrief) ?? d.enableMorningBrief
+        morningBriefHour = try c.decodeIfPresent(Int.self, forKey: .morningBriefHour) ?? d.morningBriefHour
+        enableEODSummary = try c.decodeIfPresent(Bool.self, forKey: .enableEODSummary) ?? d.enableEODSummary
+        eodSummaryHour = try c.decodeIfPresent(Int.self, forKey: .eodSummaryHour) ?? d.eodSummaryHour
+        enableWeeklyReview = try c.decodeIfPresent(Bool.self, forKey: .enableWeeklyReview) ?? d.enableWeeklyReview
+        weeklyReviewWeekday = try c.decodeIfPresent(Int.self, forKey: .weeklyReviewWeekday) ?? d.weeklyReviewWeekday
+        autoSessionDetectedWork = try c.decodeIfPresent(Bool.self, forKey: .autoSessionDetectedWork) ?? d.autoSessionDetectedWork
+        scheduledFocusBlocks = try c.decodeIfPresent([FocusBlockSchedule].self, forKey: .scheduledFocusBlocks) ?? d.scheduledFocusBlocks
     }
 }

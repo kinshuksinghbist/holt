@@ -1,0 +1,1608 @@
+[
+  {
+    "id": "session_start.polite.01",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Starting a {minutes}-minute focus block. Take a breath and begin."
+  },
+  {
+    "id": "session_start.polite.02",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes on '{task}'. One step at a time."
+  },
+  {
+    "id": "session_start.polite.03",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Timer started. {left} tasks on today's list whenever you're ready."
+  },
+  {
+    "id": "session_start.polite.04",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "A {minutes}-minute session begins. May thy focus hold steady."
+  },
+  {
+    "id": "session_start.polite.05",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focusing on '{task}'. You've got this at your own pace."
+  },
+  {
+    "id": "session_start.polite.06",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session underway. You've already finished {done} tasks today."
+  },
+  {
+    "id": "session_start.polite.07",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Locked in for {minutes} minutes. Lowkey a calm start."
+  },
+  {
+    "id": "session_start.polite.08",
+    "trigger": "session_start",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Setting {minutes} minutes aside for '{task}'. Quiet progress counts."
+  },
+  {
+    "id": "session_start.punchy.01",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes on the clock. Distractions will be documented."
+  },
+  {
+    "id": "session_start.punchy.02",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m for '{task}'. The mountain does not climb itself."
+  },
+  {
+    "id": "session_start.punchy.03",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Clock started. {left} todos remain; time to shrink that number."
+  },
+  {
+    "id": "session_start.punchy.04",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Forsooth, a {minutes}-minute endeavour commences. Guard thy tabs."
+  },
+  {
+    "id": "session_start.punchy.05",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Main-character energy on '{task}'. No cap, just execute."
+  },
+  {
+    "id": "session_start.punchy.06",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {left} left. Time to reduce the embarrassment."
+  },
+  {
+    "id": "session_start.punchy.07",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes} minutes. It's giving deep work, theoretically."
+  },
+  {
+    "id": "session_start.punchy.08",
+    "trigger": "session_start",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Hie thee to '{task}'. Thy future self is watching."
+  },
+  {
+    "id": "session_start.strict.01",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes. Work. No detours."
+  },
+  {
+    "id": "session_start.strict.02",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' for {minutes} minutes. Execute."
+  },
+  {
+    "id": "session_start.strict.03",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{left} tasks remain unfinished. Begin immediately."
+  },
+  {
+    "id": "session_start.strict.04",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes allotted. Squander not a single second."
+  },
+  {
+    "id": "session_start.strict.05",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Focus on '{task}'. Excuses are not scheduled."
+  },
+  {
+    "id": "session_start.strict.06",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} complete. Raise that ratio now."
+  },
+  {
+    "id": "session_start.strict.07",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes} minutes locked in. Do not sell."
+  },
+  {
+    "id": "session_start.strict.08",
+    "trigger": "session_start",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' is waiting. Start typing."
+  },
+  {
+    "id": "session_complete.polite.01",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} focused minutes complete. Well done \u2014 take a breather."
+  },
+  {
+    "id": "session_complete.polite.02",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Finished {minutes} minutes on '{task}'. Nicely handled."
+  },
+  {
+    "id": "session_complete.polite.03",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session complete. {done} tasks checked off today."
+  },
+  {
+    "id": "session_complete.polite.04",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thy {minutes}-minute block is complete. Rest well."
+  },
+  {
+    "id": "session_complete.polite.05",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session #{count} complete today. Steady, sustainable progress."
+  },
+  {
+    "id": "session_complete.polite.06",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes} minutes done. Honestly, you ate that."
+  },
+  {
+    "id": "session_complete.polite.07",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Good block. {left} tasks left whenever you return."
+  },
+  {
+    "id": "session_complete.polite.08",
+    "trigger": "session_complete",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Solid work on '{task}'. Step back for a few minutes."
+  },
+  {
+    "id": "session_complete.punchy.01",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m complete. No collapse into digital nonsense. Growth."
+  },
+  {
+    "id": "session_complete.punchy.02",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on '{task}' finished. I am quietly documenting this."
+  },
+  {
+    "id": "session_complete.punchy.03",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Session #{count} done. Lowkey impressive. I will deny saying that."
+  },
+  {
+    "id": "session_complete.punchy.04",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast endured {minutes} minutes of toil. Most respectable."
+  },
+  {
+    "id": "session_complete.punchy.05",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Block complete. {done} done, {left} remaining. Momentum exists."
+  },
+  {
+    "id": "session_complete.punchy.06",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes} minutes locked in, zero chaos. W."
+  },
+  {
+    "id": "session_complete.punchy.07",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' received actual effort. Rare, yet welcome."
+  },
+  {
+    "id": "session_complete.punchy.08",
+    "trigger": "session_complete",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{count} sessions today. Almost resembles a functional schedule."
+  },
+  {
+    "id": "session_complete.strict.01",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes complete. Acceptable. Repeat."
+  },
+  {
+    "id": "session_complete.strict.02",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on '{task}' logged. Take your allotted break."
+  },
+  {
+    "id": "session_complete.strict.03",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session #{count} finished. Consistency is the bare minimum."
+  },
+  {
+    "id": "session_complete.strict.04",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Block complete. {left} tasks still await completion."
+  },
+  {
+    "id": "session_complete.strict.05",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes fulfilled. Do not linger on break."
+  },
+  {
+    "id": "session_complete.strict.06",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} tasks done. Keep moving."
+  },
+  {
+    "id": "session_complete.strict.07",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m cleared. Stay locked in after recess."
+  },
+  {
+    "id": "session_complete.strict.08",
+    "trigger": "session_complete",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' progressed. Finish the job next block."
+  },
+  {
+    "id": "session_abandon.polite.01",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stopped after {minutes} minutes. Those focused minutes still count."
+  },
+  {
+    "id": "session_abandon.polite.02",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Ended '{task}' after {minutes}m. Start fresh when ready."
+  },
+  {
+    "id": "session_abandon.polite.03",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session ended early. You've still completed {done} tasks today."
+  },
+  {
+    "id": "session_abandon.polite.04",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Ended at {minutes} minutes. Tomorrow offers another attempt."
+  },
+  {
+    "id": "session_abandon.polite.05",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused for now. {left} tasks remain whenever you have energy."
+  },
+  {
+    "id": "session_abandon.polite.06",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Called it at {minutes}m. It happens; reset and go again."
+  },
+  {
+    "id": "session_abandon.polite.07",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stepped away from '{task}'. Take a short reset."
+  },
+  {
+    "id": "session_abandon.polite.08",
+    "trigger": "session_abandon",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stopped early. {count} completed sessions remain on the board."
+  },
+  {
+    "id": "session_abandon.punchy.01",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Abandoned at {minutes} minutes. Noted. Everything is noted."
+  },
+  {
+    "id": "session_abandon.punchy.02",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Quit '{task}' at {minutes}m. It's giving commitment issues."
+  },
+  {
+    "id": "session_abandon.punchy.03",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast forsaken the clock at {minutes} minutes. Alas."
+  },
+  {
+    "id": "session_abandon.punchy.04",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes before bailing. A brief, tragic novella."
+  },
+  {
+    "id": "session_abandon.punchy.05",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session dropped. Those {left} tasks will not resolve themselves."
+  },
+  {
+    "id": "session_abandon.punchy.06",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Bailed on '{task}'. Lowkey tragic, highkey documented."
+  },
+  {
+    "id": "session_abandon.punchy.07",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stopped at {minutes}m. The cycle counter declines to advance."
+  },
+  {
+    "id": "session_abandon.punchy.08",
+    "trigger": "session_abandon",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Abandoned. Still sitting at {count} completed sessions today."
+  },
+  {
+    "id": "session_abandon.strict.01",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Abandoned at {minutes} minutes. Recorded in the permanent ledger."
+  },
+  {
+    "id": "session_abandon.strict.02",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stopped '{task}' at {minutes}m. This does not count toward cycle."
+  },
+  {
+    "id": "session_abandon.strict.03",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Session quit early. {left} tasks remain untouched."
+  },
+  {
+    "id": "session_abandon.strict.04",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Dereliction at {minutes} minutes. Unacceptable."
+  },
+  {
+    "id": "session_abandon.strict.05",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m logged as abandoned. Finish what you start."
+  },
+  {
+    "id": "session_abandon.strict.06",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' abandoned mid-block. Regroup and finish."
+  },
+  {
+    "id": "session_abandon.strict.07",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Early exit. Completed count remains {count}."
+  },
+  {
+    "id": "session_abandon.strict.08",
+    "trigger": "session_abandon",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Dropped at {minutes}m. Zero points for quitting early."
+  },
+  {
+    "id": "break_over.polite.01",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}-minute break finished. Ready when you are."
+  },
+  {
+    "id": "break_over.polite.02",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Break's over. '{task}' is queued up next."
+  },
+  {
+    "id": "break_over.polite.03",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Hope that helped. {left} tasks on deck for today."
+  },
+  {
+    "id": "break_over.polite.04",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thy {minutes}-minute respite concludes. Return at thy pace."
+  },
+  {
+    "id": "break_over.polite.05",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Break ended. {done} tasks already completed today."
+  },
+  {
+    "id": "break_over.polite.06",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m break done. Soft reset complete."
+  },
+  {
+    "id": "break_over.polite.07",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Whenever you're set, '{task}' is waiting."
+  },
+  {
+    "id": "break_over.polite.08",
+    "trigger": "break_over",
+    "tone": "polite",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Ready for session #{count} whenever you click Start."
+  },
+  {
+    "id": "break_over.punchy.01",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m break done. The mountain did not climb itself."
+  },
+  {
+    "id": "break_over.punchy.02",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Recess has concluded. Hie thee back to '{task}'."
+  },
+  {
+    "id": "break_over.punchy.03",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Break over. {left} tasks continue to stare at you."
+  },
+  {
+    "id": "break_over.punchy.04",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m break over. Time to lock back in, no cap."
+  },
+  {
+    "id": "break_over.punchy.05",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' missed you. Or at least remained completely unchanged."
+  },
+  {
+    "id": "break_over.punchy.06",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "done",
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} done, {left} left. Return to the desk."
+  },
+  {
+    "id": "break_over.punchy.07",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Forsooth, {minutes} minutes have elapsed. Resume thy post."
+  },
+  {
+    "id": "break_over.punchy.08",
+    "trigger": "break_over",
+    "tone": "punchy",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Next block ready. Make it session #{count}."
+  },
+  {
+    "id": "break_over.strict.01",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}-minute break over. Back to work."
+  },
+  {
+    "id": "break_over.strict.02",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Respite ended. '{task}' awaits immediate attention."
+  },
+  {
+    "id": "break_over.strict.03",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Break concluded. {left} tasks remain. Start."
+  },
+  {
+    "id": "break_over.strict.04",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes expired. Return to duty."
+  },
+  {
+    "id": "break_over.strict.05",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "count"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Begin session #{count} now."
+  },
+  {
+    "id": "break_over.strict.06",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stop scrolling. Return to '{task}'."
+  },
+  {
+    "id": "break_over.strict.07",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "done",
+      "planned"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} of {planned} done. Resume immediately."
+  },
+  {
+    "id": "break_over.strict.08",
+    "trigger": "break_over",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m recess over. Lock in now."
+  },
+  {
+    "id": "idle_pause.polite.01",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "No input for {minutes} minutes, so I paused the timer for you."
+  },
+  {
+    "id": "idle_pause.polite.02",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused '{task}' after {minutes}m away so idle time won't count."
+  },
+  {
+    "id": "idle_pause.polite.03",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes of stillness observed. The clock rests too."
+  },
+  {
+    "id": "idle_pause.polite.04",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Stepped away for {minutes}m? Session paused automatically."
+  },
+  {
+    "id": "idle_pause.polite.05",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "Paused after {minutes}m AFK so your stats stay honest."
+  },
+  {
+    "id": "idle_pause.polite.06",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused '{task}' while you stepped away. Resume when back."
+  },
+  {
+    "id": "idle_pause.polite.07",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes idle excluded from your focus total."
+  },
+  {
+    "id": "idle_pause.polite.08",
+    "trigger": "idle_pause",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Timer paused on idle. Your {done} done tasks are safe."
+  },
+  {
+    "id": "idle_pause.punchy.01",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Motionless for {minutes}m. Deep thought or a nap; paused either way."
+  },
+  {
+    "id": "idle_pause.punchy.02",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused '{task}' after {minutes}m idle. Ghosts don't earn pomodoros."
+  },
+  {
+    "id": "idle_pause.punchy.03",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast vanished for {minutes} minutes. The clock halts."
+  },
+  {
+    "id": "idle_pause.punchy.04",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m AFK. Paused so we don't fake the stats, no cap."
+  },
+  {
+    "id": "idle_pause.punchy.05",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes of zero input. Bold meditation technique."
+  },
+  {
+    "id": "idle_pause.punchy.06",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' paused for inactivity. Idle minutes never count."
+  },
+  {
+    "id": "idle_pause.punchy.07",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "No signs of life for {minutes}m. Timer frozen."
+  },
+  {
+    "id": "idle_pause.punchy.08",
+    "trigger": "idle_pause",
+    "tone": "punchy",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused on idle. {left} tasks still expect your return."
+  },
+  {
+    "id": "idle_pause.strict.01",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Paused after {minutes} minutes idle. Idle time never counts."
+  },
+  {
+    "id": "idle_pause.strict.02",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' paused ({minutes}m inactive). Resume when present."
+  },
+  {
+    "id": "idle_pause.strict.03",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes of absence deducted. Clock halted."
+  },
+  {
+    "id": "idle_pause.strict.04",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Zero input for {minutes}m. Focus cannot be fabricated."
+  },
+  {
+    "id": "idle_pause.strict.05",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "left"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Idle pause active. {left} tasks await actual presence."
+  },
+  {
+    "id": "idle_pause.strict.06",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m AFK detected. Timer paused."
+  },
+  {
+    "id": "idle_pause.strict.07",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Return to '{task}' before resuming the clock."
+  },
+  {
+    "id": "idle_pause.strict.08",
+    "trigger": "idle_pause",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Inactivity threshold ({minutes}m) reached. Paused."
+  },
+  {
+    "id": "working_too_long.polite.01",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "You've worked {minutes} minutes straight. Consider taking a break."
+  },
+  {
+    "id": "working_too_long.polite.02",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m straight on '{task}'. A short rest keeps you sharp."
+  },
+  {
+    "id": "working_too_long.polite.03",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Thou hast laboured {minutes} minutes without pause. Take rest."
+  },
+  {
+    "id": "working_too_long.polite.04",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m nonstop. Hydrate and touch grass for 5 minutes."
+  },
+  {
+    "id": "working_too_long.polite.05",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks done today, and you're due for a proper breather."
+  },
+  {
+    "id": "working_too_long.polite.06",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Over {minutes} minutes continuous work. Step away briefly."
+  },
+  {
+    "id": "working_too_long.polite.07",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' can wait five minutes while you stretch."
+  },
+  {
+    "id": "working_too_long.polite.08",
+    "trigger": "working_too_long",
+    "tone": "polite",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} uninterrupted minutes. Rest protects focus."
+  },
+  {
+    "id": "working_too_long.punchy.01",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes straight. Even servers need cooling. Take a break."
+  },
+  {
+    "id": "working_too_long.punchy.02",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m on '{task}' nonstop. Hydrate, no cap."
+  },
+  {
+    "id": "working_too_long.punchy.03",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "Forsooth, {minutes} minutes without respite. Cease momentarily."
+  },
+  {
+    "id": "working_too_long.punchy.04",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m continuous work. Heroic, yet mildly unwise. Break time."
+  },
+  {
+    "id": "working_too_long.punchy.05",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "done"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{done} tasks done and {minutes}m straight? Blink occasionally."
+  },
+  {
+    "id": "working_too_long.punchy.06",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m straight is wild. Go drink water."
+  },
+  {
+    "id": "working_too_long.punchy.07",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "'{task}' will survive a 5-minute break. You might too."
+  },
+  {
+    "id": "working_too_long.punchy.08",
+    "trigger": "working_too_long",
+    "tone": "punchy",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Continuous streak at {minutes}m. Take a breather."
+  },
+  {
+    "id": "working_too_long.strict.01",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes nonstop. Diminishing returns have arrived. Break."
+  },
+  {
+    "id": "working_too_long.strict.02",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "task",
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes}m on '{task}' without rest. Step away for 5 minutes."
+  },
+  {
+    "id": "working_too_long.strict.03",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "archaic",
+    "profanity": false,
+    "text": "{minutes} minutes continuous toil. Rest before error creeps in."
+  },
+  {
+    "id": "working_too_long.strict.04",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Mandatory pause suggested after {minutes}m continuous work."
+  },
+  {
+    "id": "working_too_long.strict.05",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Over {minutes}m straight. Take the scheduled break."
+  },
+  {
+    "id": "working_too_long.strict.06",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "task"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "Leave '{task}' for five minutes. Fatigue degrades output."
+  },
+  {
+    "id": "working_too_long.strict.07",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "genz",
+    "profanity": false,
+    "text": "{minutes}m straight. Rest now or sell later."
+  },
+  {
+    "id": "working_too_long.strict.08",
+    "trigger": "working_too_long",
+    "tone": "strict",
+    "requires": [
+      "minutes"
+    ],
+    "style": "standard",
+    "profanity": false,
+    "text": "{minutes} minutes elapsed. Take a break immediately."
+  }
+]

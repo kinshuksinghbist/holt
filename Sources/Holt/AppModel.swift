@@ -4,6 +4,7 @@ import HoltCore
 import Observation
 import ServiceManagement
 import SwiftUI
+import UserNotifications
 
 /// What the animation layer should show.
 enum AnimationMode: Equatable {
@@ -30,6 +31,7 @@ final class AppModel {
     let screenStore: ScreenStore
     let rollupEngine: RollupEngine
     let statsQuery: StatsQuery
+    let messageStore: MessageStore
     let classifier: Classifier
 
     private(set) var state: SessionState
@@ -43,6 +45,7 @@ final class AppModel {
     private(set) var userRules: [CategoryRuleRecord] = []
     var dayNote: String = ""
     var selectedTaskId: Int64?
+    private(set) var snoozedAllUntil: Date?
 
     var currentSessionDBId: Int64? { activeSessionID }
     var currentAppWindowTitle: String? { activityTracker.currentApp?.windowTitle }
@@ -69,6 +72,11 @@ final class AppModel {
     @ObservationIgnored private var nmServer: NativeMessagingServer?
     @ObservationIgnored private var procrastination = ProcrastinationDetector()
     @ObservationIgnored private var lastDistractionAlert: ProcrastinationAlert?
+    @ObservationIgnored private var autoSession = AutoSessionMonitor()
+    @ObservationIgnored private var nextReminderAt: Date?
+    @ObservationIgnored private var lastMorningBriefDay: String?
+    @ObservationIgnored private var lastEODSummaryDay: String?
+    @ObservationIgnored private var lastWeeklyReviewKey: String?
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var lineCounter = 0
     @ObservationIgnored private var awaySince: Date?
@@ -108,6 +116,7 @@ final class AppModel {
         let screenStore = ScreenStore(db: openedDB)
         let rollupEngine = RollupEngine(db: openedDB)
         let statsQuery = StatsQuery(db: openedDB)
+        let messageStore = MessageStore(db: openedDB)
         let loadedRules = (try? spanStore.fetchUserRules()) ?? []
         let classifier = Classifier(userRules: loadedRules)
         self.store = store
@@ -115,6 +124,7 @@ final class AppModel {
         self.screenStore = screenStore
         self.rollupEngine = rollupEngine
         self.statsQuery = statsQuery
+        self.messageStore = messageStore
         self.userRules = loadedRules
         self.classifier = classifier
         self.activityTracker = ActivityTracker(store: spanStore, classifier: classifier)
@@ -364,6 +374,45 @@ final class AppModel {
         nmServer?.stop()
     }
 
+    var isQuietSnoozed: Bool {
+        snoozedAllUntil.map { Date.now < $0 } ?? false
+    }
+
+    func toggleSnoozeAllOneHour() {
+        if isQuietSnoozed {
+            snoozedAllUntil = nil
+            say("Quiet mode ended. Back on watch.")
+        } else {
+            snoozedAllUntil = Date.now.addingTimeInterval(3600)
+            say("Quiet for 1 hour. I shall observe in silence.")
+        }
+    }
+
+    func buildCurrentFactSheet() -> FactSheet? {
+        try? FactSheetBuilder.build(
+            db: db,
+            now: .now,
+            currentSessionKind: state.phase.kind,
+            currentTaskTitle: selectedTask?.title,
+            currentApp: activityTracker.currentApp?.appName,
+            currentSite: browserTracker.currentWeb?.domain,
+            currentVideoTitle: browserTracker.currentWeb?.title
+        )
+    }
+
+    func recordNotificationOutcome(messageId: Int64?, actionIdentifier: String) {
+        guard let messageId else { return }
+        let outcome: NudgeOutcome
+        if actionIdentifier == UNNotificationDismissActionIdentifier {
+            outcome = .dismissed
+        } else if actionIdentifier.contains("snooze") {
+            outcome = .snoozed
+        } else {
+            outcome = .acted
+        }
+        try? messageStore.updateOutcome(id: messageId, outcome: outcome)
+    }
+
     func handleNotificationAction(_ identifier: String) {
         if identifier == NotificationCategory.snoozeTooLongID {
             continuousWork.snooze(now: .now, minutes: 20)
@@ -371,12 +420,34 @@ final class AppModel {
             say("Snoozed for 20 minutes. Do not make this a habit.")
             return
         }
-        if identifier == NotificationCategory.backToWorkID {
+        if identifier == NotificationCategory.backToWorkID || identifier == NotificationCategory.openHoltID {
             showMainWindow()
             return
         }
         if identifier == NotificationCategory.thisIsForWorkID {
             markLastDistractionAsProductive()
+            return
+        }
+        if identifier == NotificationCategory.start25ID {
+            if canSetDuration { start(minutes: 25) }
+            return
+        }
+        if identifier == NotificationCategory.start50ID {
+            if canSetDuration { start(minutes: 50) }
+            return
+        }
+        if identifier == NotificationCategory.snoozeNoSessionID {
+            say("Snoozed for 15 minutes.")
+            return
+        }
+        if identifier == NotificationCategory.cancelAutoSessionID {
+            autoSession.cancelPending()
+            say("Auto-session cancelled.")
+            return
+        }
+        if identifier == NotificationCategory.snoozeAutoSessionID {
+            autoSession.snoozeDetectedWork(now: .now, hours: 1)
+            say("Detected work auto-start snoozed for 1 hour.")
             return
         }
         guard let action = NotificationCategory.action(for: identifier) else { return }
@@ -491,6 +562,7 @@ final class AppModel {
     }
 
     func setTaskStatus(taskId: Int64, status: TaskStatus, skipReason: String? = nil) {
+        let title = todayTasks.first(where: { $0.id == taskId })?.title
         try? store.setTaskStatus(taskId: taskId, status: status, skipReason: skipReason)
         if status.isTerminal && selectedTaskId == taskId {
             selectedTaskId = nil
@@ -500,6 +572,11 @@ final class AppModel {
         reloadTasksAndNotes()
         if selectedTaskId == nil {
             selectedTaskId = undoneTodayTasks.first?.id
+        }
+        if status == .done {
+            sayVoiceLine(trigger: .taskDone, overrides: title.map { ["task": $0] } ?? [:])
+        } else if status == .skipped {
+            sayVoiceLine(trigger: .taskSkipped, overrides: title.map { ["task": $0] } ?? [:])
         }
     }
 
@@ -660,7 +737,17 @@ final class AppModel {
     private func handle(_ effects: [SessionEffect]) {
         for effect in effects {
             lineCounter += 1
-            let line = Voice.line(for: effect, tone: toneBand, seed: lineCounter)
+            let trigger: VoiceTrigger?
+            switch effect {
+            case .started(.work): trigger = .sessionStart
+            case .completed(.work): trigger = .sessionComplete
+            case .endedEarly(.work): trigger = .sessionAbandon
+            case .completed(.shortBreak), .completed(.longBreak): trigger = .breakOver
+            case .paused(.idle): trigger = .idlePause
+            default: trigger = nil
+            }
+            let rendered = trigger.flatMap { renderLine(trigger: $0) }
+            let line = rendered?.text ?? Voice.line(for: effect, tone: toneBand, seed: lineCounter)
             if let line { say(line) }
             if case let .completed(kind) = effect {
                 if kind == .work {
@@ -668,22 +755,129 @@ final class AppModel {
                 } else {
                     Sounds.playBreakOver(settings: settings)
                 }
-                notifyCompletion(of: kind, line: line ?? "")
+                notifyCompletion(of: kind, line: line ?? "", templateId: rendered?.templateId ?? "builtin", trigger: trigger ?? .sessionComplete)
             }
         }
     }
 
-    private func notifyCompletion(of kind: SessionKind, line: String) {
+    private func notifyCompletion(of kind: SessionKind, line: String, templateId: String, trigger: VoiceTrigger) {
         guard settings.showNotifications else { return }
+        let msg = try? messageStore.log(HoltMessageRecord(
+            ts: Int64(Date.now.timeIntervalSince1970),
+            channel: "notification",
+            trigger: trigger.rawValue,
+            tone: tone,
+            templateId: templateId,
+            text: line,
+            deliveredAt: Int64(Date.now.timeIntervalSince1970)
+        ))
         if kind == .work {
             let breakRunning: Bool
             if case .running = state.phase { breakRunning = true } else { breakRunning = false }
-            Notifier.shared.post(title: "Session complete", body: line,
-                                 category: breakRunning ? .workDoneBreakRunning : .workDoneBreakReady)
+            Notifier.shared.post(
+                title: "Session complete",
+                body: line,
+                category: breakRunning ? .workDoneBreakRunning : .workDoneBreakReady,
+                messageId: msg?.id
+            )
         } else {
-            Notifier.shared.post(title: "Break's over", body: line,
-                                 category: state.phase == .ready(kind: .work) ? .breakOver : nil)
+            Notifier.shared.post(
+                title: "Break's over",
+                body: line,
+                category: state.phase == .ready(kind: .work) ? .breakOver : nil,
+                messageId: msg?.id
+            )
         }
+    }
+
+    private func renderLine(trigger: VoiceTrigger, overrides: [String: String] = [:]) -> RenderedVoiceLine? {
+        guard let facts = buildCurrentFactSheet() else { return nil }
+        return VoiceLibrary.shared.render(
+            trigger: trigger,
+            tone: toneBand,
+            facts: facts,
+            overrides: overrides,
+            slangMix: settings.slangMix,
+            allowProfanity: settings.allowProfanity,
+            seed: lineCounter
+        )
+    }
+
+    private func sayVoiceLine(trigger: VoiceTrigger, overrides: [String: String] = [:]) {
+        lineCounter += 1
+        if let rendered = renderLine(trigger: trigger, overrides: overrides) {
+            say(rendered.text)
+            _ = try? messageStore.log(HoltMessageRecord(
+                ts: Int64(Date.now.timeIntervalSince1970),
+                channel: "panel",
+                trigger: trigger.rawValue,
+                tone: tone,
+                templateId: rendered.templateId,
+                text: rendered.text
+            ))
+        }
+    }
+
+    private func deliverPolicyNudge(
+        trigger: VoiceTrigger,
+        title: String,
+        category: NotificationCategory?,
+        overrides: [String: String] = [:],
+        withSound: Bool = false
+    ) {
+        lineCounter += 1
+        let now = Date.now
+        let rendered = renderLine(trigger: trigger, overrides: overrides)
+        let text = rendered?.text ?? "Holt check-in."
+        let templateId = rendered?.templateId ?? "fallback"
+
+        let deliveredHour = (try? messageStore.countDeliveredInLastHour(now: now)) ?? 0
+        let lastTrigger = try? messageStore.lastDeliveredAt(trigger: trigger)
+        let allowed = NudgePolicy.shouldDeliverNotification(
+            trigger: trigger,
+            settings: settings,
+            now: now,
+            isSystemFocusActive: Self.isSystemFocusActive(),
+            snoozedAllUntil: snoozedAllUntil,
+            deliveredLastHour: deliveredHour,
+            lastTriggerDeliveredAt: lastTrigger
+        )
+        say(text)
+        guard allowed else {
+            _ = try? messageStore.log(HoltMessageRecord(
+                ts: Int64(now.timeIntervalSince1970),
+                channel: "panel",
+                trigger: trigger.rawValue,
+                tone: tone,
+                templateId: templateId,
+                text: text
+            ))
+            return
+        }
+        if withSound { Sounds.playWorkDone(settings: settings) }
+        let msg = try? messageStore.log(HoltMessageRecord(
+            ts: Int64(now.timeIntervalSince1970),
+            channel: "notification",
+            trigger: trigger.rawValue,
+            tone: tone,
+            templateId: templateId,
+            text: text,
+            deliveredAt: Int64(now.timeIntervalSince1970)
+        ))
+        Notifier.shared.post(title: title, body: text, category: category, messageId: msg?.id)
+    }
+
+    private static func isSystemFocusActive() -> Bool {
+        let assertionsURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/DoNotDisturb/DB/Assertions.json")
+        guard let data = try? Data(contentsOf: assertionsURL),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let records = json["data"] as? [[String: Any]],
+              let first = records.first,
+              let storeRecords = first["storeAssertionRecords"] as? [[String: Any]] else {
+            return false
+        }
+        return !storeRecords.isEmpty
     }
 
     private func say(_ text: String) {
@@ -707,6 +901,7 @@ final class AppModel {
             sessionKind: state.phase.kind?.dbKind
         )
         evaluateProcrastination(isIdle: isCurrentlyIdle)
+        evaluateAutoSessionAndSchedules(isIdle: isCurrentlyIdle)
         let inWork: Bool
         if case .running(.work, _, _, _) = state.phase { inWork = true } else { inWork = false }
         let isAmbiguous = (activityTracker.currentApp?.category == .neutral && browserTracker.currentWeb == nil)
@@ -797,23 +992,107 @@ final class AppModel {
                 severity: alert.severity
             ))
             lastDistractionAlert = alert
-            lineCounter += 1
-            let line = Voice.procrastinationLine(
-                subject: alert.subject,
-                severity: alert.severity,
-                tone: toneBand,
-                seed: lineCounter
+            let trigger: VoiceTrigger = alert.kind == .ytEntertainment
+                ? .ytEntertainment
+                : (alert.kind == .noSession ? .noSessionActive : .distraction)
+            let category: NotificationCategory? = alert.kind == .noSession
+                ? .noSessionPending
+                : (alert.ruleKind != nil ? .procrastination : nil)
+            let overrides: [String: String] = [
+                "site": alert.subject,
+                "app": alert.subject,
+                "video": browserTracker.currentWeb?.title ?? alert.subject,
+                "minutes": String(max(1, alert.durationSec / 60)),
+            ]
+            deliverPolicyNudge(
+                trigger: trigger,
+                title: alert.severity >= 2 ? "Focus detour" : "Quick check-in",
+                category: category,
+                overrides: overrides,
+                withSound: alert.severity >= 3
             )
-            say(line)
-            if settings.showNotifications {
-                if alert.severity >= 3 {
-                    Sounds.playWorkDone(settings: settings)
-                }
+        }
+    }
+
+    private func evaluateAutoSessionAndSchedules(isIdle: Bool) {
+        let now = Date.now
+        let isProductive = browserTracker.currentWeb?.category == .productive
+            || (browserTracker.currentWeb == nil && activityTracker.currentApp?.category == .productive)
+
+        if let autoEvent = autoSession.update(
+            phase: state.phase,
+            isProductiveActivity: isProductive,
+            isIdle: isIdle,
+            settings: settings,
+            now: now
+        ) {
+            switch autoEvent {
+            case .promptDetectedWork:
                 Notifier.shared.post(
-                    title: alert.severity >= 2 ? "Focus detour" : "Quick check-in",
-                    body: line,
-                    category: alert.ruleKind != nil ? .procrastination : nil
+                    title: "Looks like work",
+                    body: "Starting a \(settings.workMinutes)-minute session in 10 s.",
+                    category: .autoSession
                 )
+            case .startDetectedWork:
+                if canSetDuration {
+                    pendingMinutes = settings.workMinutes
+                    perform(state.phase == .idle ? .startWork : .startNext, startedBy: "detected")
+                }
+            case .startScheduledBlock(let label):
+                if canSetDuration {
+                    pendingMinutes = settings.workMinutes
+                    perform(state.phase == .idle ? .startWork : .startNext, startedBy: "schedule")
+                    say("Scheduled block '\(label)' started.")
+                }
+            }
+        }
+
+        // Scheduled summaries & hourly/varied reminders
+        let cal = Calendar.current
+        let hour = cal.component(.hour, from: now)
+        let weekday = cal.component(.weekday, from: now)
+
+        if settings.enableMorningBrief && hour == settings.morningBriefHour && lastMorningBriefDay != currentDayKey {
+            lastMorningBriefDay = currentDayKey
+            deliverPolicyNudge(trigger: .morningBrief, title: "Morning brief", category: .summary)
+        }
+        if settings.enableEODSummary && hour == settings.eodSummaryHour && lastEODSummaryDay != currentDayKey {
+            lastEODSummaryDay = currentDayKey
+            _ = try? rollupEngine.recomputeDay(currentDayKey)
+            deliverPolicyNudge(trigger: .eodSummary, title: "End-of-day summary", category: .summary)
+        }
+        let weekKey = "\(cal.component(.yearForWeekOfYear, from: now))-W\(cal.component(.weekOfYear, from: now))"
+        if settings.enableWeeklyReview && weekday == settings.weeklyReviewWeekday && hour >= 18 && lastWeeklyReviewKey != weekKey {
+            lastWeeklyReviewKey = weekKey
+            deliverPolicyNudge(trigger: .weeklyReview, title: "Weekly review", category: .summary)
+        }
+
+        if settings.enableReminders {
+            let inWorkOnTask: Bool
+            if case .running(.work, _, _, _) = state.phase {
+                let currentCat = browserTracker.currentWeb?.category ?? activityTracker.currentApp?.category ?? .neutral
+                inWorkOnTask = currentCat != .distracting
+            } else {
+                inWorkOnTask = false
+            }
+
+            if nextReminderAt == nil {
+                let delay = NudgePolicy.nextReminderIntervalSeconds(
+                    cadence: settings.reminderCadence,
+                    tone: toneBand,
+                    jitterUnit: Double.random(in: 0...1)
+                )
+                nextReminderAt = now.addingTimeInterval(delay)
+            } else if let due = nextReminderAt, now >= due {
+                let delay = NudgePolicy.nextReminderIntervalSeconds(
+                    cadence: settings.reminderCadence,
+                    tone: toneBand,
+                    jitterUnit: Double.random(in: 0...1)
+                )
+                nextReminderAt = now.addingTimeInterval(delay)
+                if !inWorkOnTask && !isIdle {
+                    deliverPolicyNudge(trigger: .hourlyReminder, title: "Holt check-in", category: .reminder)
+                }
             }
         }
     }
@@ -826,16 +1105,12 @@ final class AppModel {
             enabled: settings.nudgeWorkingTooLong
         )
         guard shouldNudge else { return }
-        lineCounter += 1
-        let line = Voice.workingTooLongLine(
-            minutes: settings.workingTooLongMinutes,
-            tone: toneBand,
-            seed: lineCounter
+        deliverPolicyNudge(
+            trigger: .workingTooLong,
+            title: "Working too long",
+            category: .workingTooLong,
+            overrides: ["minutes": String(settings.workingTooLongMinutes)]
         )
-        say(line)
-        if settings.showNotifications {
-            Notifier.shared.post(title: "Working too long", body: line, category: .workingTooLong)
-        }
     }
 
     private func userWentAway(_ reason: PauseReason) {

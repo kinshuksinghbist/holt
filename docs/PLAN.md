@@ -341,6 +341,7 @@ you're in a session and on task.
   notifications; auto-session (detected work, schedules, chaining).
 - ✅ Every trigger × tone yields a fact-grounded line; policy tests (caps,
   quiet hours, cooldowns) with fixed clocks.
+- *Progress:* `FactSheet` + `FactSheetBuilder`, 432 JSON templates in `Resources/voice/*.json` across 18 triggers × 3 tones, `VoiceLibrary` with 7-day no-repeat & slot filling, `NudgePolicy`, `MessageStore`, `AutoSessionMonitor`, and "What Holt knows" debug view implemented and unit-tested.
 
 **M7 — Animation, walkthrough, polish → v1.0**
 - Rive runtime + art drop-in; onboarding (7 steps) + coach-marks + tips;

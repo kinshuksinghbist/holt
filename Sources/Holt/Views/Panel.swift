@@ -38,6 +38,12 @@ struct PanelView: View {
                     .contentTransition(.numericText())
             }
             Spacer()
+            IconButton(
+                symbol: model.isQuietSnoozed ? "moon.zzz.fill" : "moon.zzz",
+                help: model.isQuietSnoozed ? "End quiet hour" : "Holt, quiet for 1 h"
+            ) {
+                model.toggleSnoozeAllOneHour()
+            }
             IconButton(symbol: "gearshape", help: "Settings") { open(WindowID.settings) }
             IconButton(symbol: "macwindow", help: "Open Holt") { open(WindowID.main) }
         }
