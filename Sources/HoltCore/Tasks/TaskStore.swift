@@ -22,11 +22,36 @@ public struct RecurringTemplate: Equatable, Identifiable, Sendable {
     public let estimatePomos: Int?
     public let link: String?
     public let recurrence: TaskRecurrence
+
+    public init(
+        id: Int64,
+        rootId: Int64,
+        listId: Int64?,
+        title: String,
+        priority: Int,
+        estimatePomos: Int?,
+        link: String?,
+        recurrence: TaskRecurrence
+    ) {
+        self.id = id
+        self.rootId = rootId
+        self.listId = listId
+        self.title = title
+        self.priority = priority
+        self.estimatePomos = estimatePomos
+        self.link = link
+        self.recurrence = recurrence
+    }
 }
 
 public struct DayPlanPreview: Equatable, Sendable {
     public let leftovers: [TaskItem]
     public let dueRecurring: [RecurringTemplate]
+
+    public init(leftovers: [TaskItem] = [], dueRecurring: [RecurringTemplate] = []) {
+        self.leftovers = leftovers
+        self.dueRecurring = dueRecurring
+    }
 
     public var isEmpty: Bool { leftovers.isEmpty && dueRecurring.isEmpty }
 }
@@ -40,6 +65,26 @@ public struct DayStatsSummary: Equatable, Sendable {
     public let tasksPlanned: Int
     public let tasksDone: Int
     public let tasksSkipped: Int
+
+    public init(
+        day: String,
+        focusSeconds: Int,
+        breakSeconds: Int,
+        sessionsCompleted: Int,
+        sessionsAbandoned: Int,
+        tasksPlanned: Int,
+        tasksDone: Int,
+        tasksSkipped: Int
+    ) {
+        self.day = day
+        self.focusSeconds = focusSeconds
+        self.breakSeconds = breakSeconds
+        self.sessionsCompleted = sessionsCompleted
+        self.sessionsAbandoned = sessionsAbandoned
+        self.tasksPlanned = tasksPlanned
+        self.tasksDone = tasksDone
+        self.tasksSkipped = tasksSkipped
+    }
 
     public var tasksRemaining: Int {
         max(0, tasksPlanned - tasksDone - tasksSkipped)

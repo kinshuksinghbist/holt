@@ -2,7 +2,7 @@ import HoltCore
 import SwiftUI
 
 struct PlanYourDaySheet: View {
-    @Bindable var model: AppModel
+    let model: AppModel
     @State private var skipReasons: [Int64: String] = [:]
 
     var body: some View {
@@ -16,7 +16,7 @@ struct PlanYourDaySheet: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button("Skip tour") { model.isPlanSheetPresented = false }
+                Button("Later") { model.isPlanSheetPresented = false }
                     .buttonStyle(.borderless)
             }
 
