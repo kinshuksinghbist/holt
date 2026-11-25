@@ -215,7 +215,7 @@ public enum FactSheetBuilder {
 
             return FactSheet(
                 builtAt: now,
-                today: TodayFacts(
+                today: FactSheet.TodayFacts(
                     day: todayKey,
                     plannedCount: plannedCount,
                     doneCount: doneCount,
@@ -234,13 +234,13 @@ public enum FactSheetBuilder {
                     currentVideoTitle: currentVideoTitle,
                     topDistraction: topDistraction
                 ),
-                yesterday: YesterdayFacts(
+                yesterday: FactSheet.YesterdayFacts(
                     day: yesterdayKey,
                     unfinishedCount: yUnfinished,
                     focusMinutes: yFocusSec / 60,
                     averageFocusMinutes: avgFocusSec / 60
                 ),
-                recent: RecentFacts(
+                recent: FactSheet.RecentFacts(
                     mostSkippedTitle: mostSkippedTitle,
                     mostSkippedCount: mostSkippedCount,
                     longestRolloverTitle: longestRolloverTitle,
