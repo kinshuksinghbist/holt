@@ -68,7 +68,7 @@ struct ClimbView: View {
     var body: some View {
         let progress = progress
         let mode = mode
-        let tint = mode.tint
+        let tint: SwiftUI.Color = mode.tint
         let reduceMotion = reduceMotion
 
         return TimelineView(.animation(minimumInterval: 1.0 / 24.0, paused: reduceMotion || (mode != .rest && mode != .paused))) { timeline in
@@ -85,7 +85,7 @@ private func drawMascotScene(
     size: CGSize,
     progress: Double,
     mode: AnimationMode,
-    tint: Color,
+    tint: SwiftUI.Color,
     phase: Double
 ) {
     let w = size.width
@@ -100,7 +100,7 @@ private func drawMascotScene(
     mountain.addLine(to: peak)
     mountain.addLine(to: rightBase)
     mountain.closeSubpath()
-    context.fill(mountain, with: .color(Color.secondary.opacity(0.20)))
+    context.fill(mountain, with: .color(SwiftUI.Color.secondary.opacity(0.20)))
 
     // Snow cap
     let capLeft = lerp(peak, foot, 0.25)
@@ -111,14 +111,14 @@ private func drawMascotScene(
     snow.addLine(to: CGPoint(x: peak.x, y: capLeft.y + 4))
     snow.addLine(to: capRight)
     snow.closeSubpath()
-    context.fill(snow, with: .color(Color.white.opacity(0.42)))
+    context.fill(snow, with: .color(SwiftUI.Color.white.opacity(0.42)))
 
     // Break sun + mascot chilling
     if mode == .rest {
         let sunR = h * 0.28
         let pulse = 1.0 + 0.06 * sin(phase * 2.0)
         let sunRect = CGRect(x: w * 0.78 - sunR * pulse / 2, y: h * 0.22 - sunR * pulse / 2, width: sunR * pulse, height: sunR * pulse)
-        context.fill(Path(ellipseIn: sunRect), with: .color(Color.orange.opacity(0.85)))
+        context.fill(Path(ellipseIn: sunRect), with: .color(SwiftUI.Color.orange.opacity(0.85)))
 
         let chillPos = CGPoint(x: w * 0.78, y: h * 0.80 + 2.0 * sin(phase * 3.0))
         context.fill(Path(ellipseIn: CGRect(x: chillPos.x - 7, y: chillPos.y - 7, width: 14, height: 14)), with: .color(tint))
@@ -148,13 +148,13 @@ private func drawMascotScene(
         var pole = Path()
         pole.move(to: peak)
         pole.addLine(to: CGPoint(x: peak.x, y: peak.y - 18))
-        context.stroke(pole, with: .color(Color.primary), lineWidth: 2)
+        context.stroke(pole, with: .color(SwiftUI.Color.primary), lineWidth: 2)
         var flag = Path()
         flag.move(to: CGPoint(x: peak.x, y: peak.y - 18))
         flag.addLine(to: CGPoint(x: peak.x + 14, y: peak.y - 14))
         flag.addLine(to: CGPoint(x: peak.x, y: peak.y - 10))
         flag.closeSubpath()
-        context.fill(flag, with: .color(Color.red))
+        context.fill(flag, with: .color(SwiftUI.Color.red))
     }
 }
 
