@@ -41,6 +41,10 @@ for fw in "$BIN_DIR"/*.framework; do
   cp -R "$fw" "$APP/Contents/Frameworks/"
 done
 
+if ! otool -l "$APP/Contents/MacOS/Holt" | grep -q "@executable_path/../Frameworks"; then
+  install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/Holt"
+fi
+
 HELPER_SIGN_ARGS=(--force --options runtime --sign "$IDENTITY")
 SIGN_ARGS=(--force --options runtime --entitlements Resources/Holt.entitlements --sign "$IDENTITY")
 if [[ "$IDENTITY" != "-" ]]; then
