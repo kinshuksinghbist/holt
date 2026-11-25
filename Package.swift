@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.macOS(.v14)],
     products: [
         .executable(name: "Holt", targets: ["Holt"]),
+        .executable(name: "holt-nm-host", targets: ["HoltNMHost"]),
         .library(name: "HoltCore", targets: ["HoltCore"]),
     ],
     dependencies: [
@@ -17,13 +18,19 @@ let package = Package(
             name: "HoltCore",
             dependencies: [
                 .product(name: "GRDB", package: "GRDB.swift"),
-            ]
+            ],
+            resources: [.process("Resources")]
         ),
         // The macOS app: menu bar item, panel, main window.
         .executableTarget(
             name: "Holt",
             dependencies: ["HoltCore"],
             resources: [.process("Resources")]
+        ),
+        // Native-messaging host launched by browsers; relays tab/YouTube events over Unix socket.
+        .executableTarget(
+            name: "HoltNMHost",
+            dependencies: ["HoltCore"]
         ),
         .testTarget(
             name: "HoltCoreTests",

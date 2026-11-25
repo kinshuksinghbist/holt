@@ -72,6 +72,38 @@ public enum Voice {
         }
     }
 
+    public static func procrastinationLine(subject: String, severity: Int, tone: ToneBand, seed: Int = 0) -> String {
+        let options = procrastinationLines(subject: subject, severity: severity, tone: tone)
+        let raw = options[Int(UInt(bitPattern: seed) % UInt(options.count))]
+        if raw.count <= 140 { return raw }
+        return String(raw.prefix(137)) + "..."
+    }
+
+    public static func procrastinationLines(subject: String, severity: Int, tone: ToneBand) -> [String] {
+        let s = subject.count > 48 ? String(subject.prefix(45)) + "..." : subject
+        if severity >= 2 {
+            switch tone {
+            case .polite:
+                return ["Still on \(s) during your focus session. Ready to return?"]
+            case .punchy:
+                return ["Still on \(s). Deep work is weeping quietly.",
+                        "Several minutes on \(s). Bold. Wrong, but bold."]
+            case .strict:
+                return ["\(s) is not on your task list. Close it now.",
+                        "Three minutes lost to \(s). End the detour immediately."]
+            }
+        }
+        switch tone {
+        case .polite:
+            return ["Looks like you drifted to \(s). Need to get back to work?"]
+        case .punchy:
+            return ["\(s) during deep work. It's giving procrastination.",
+                    "A wild detour to \(s) appeared. Forsooth, return."]
+        case .strict:
+            return ["\(s) detected in a work session. Back to work."]
+        }
+    }
+
     /// Every line Holt can say for an effect in a tone. All lines are original writing.
     public static func lines(for effect: SessionEffect, tone: ToneBand) -> [String] {
         switch effect {

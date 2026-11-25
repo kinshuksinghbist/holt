@@ -26,6 +26,8 @@ final class AppModel {
 
     let db: HoltDatabase
     let store: TaskStore
+    let spanStore: SpanStore
+    let classifier: Classifier
 
     private(set) var state: SessionState
     private(set) var now: Date = .now
@@ -35,8 +37,11 @@ final class AppModel {
     private(set) var todayTasks: [TaskItem] = []
     private(set) var chainMeta: [Int64: TaskChainMeta] = [:]
     private(set) var sessionNotes: [NoteRecord] = []
+    private(set) var userRules: [CategoryRuleRecord] = []
     var dayNote: String = ""
     var selectedTaskId: Int64?
+
+    var currentSessionDBId: Int64? { activeSessionID }
 
     /// Set when a work session just finished so the UI can ask "What did you do?".
     var pendingSessionNoteId: Int64?
@@ -54,6 +59,11 @@ final class AppModel {
 
     @ObservationIgnored var windowOpener: OpenWindowAction?
     @ObservationIgnored private let activity: ActivityMonitor
+    @ObservationIgnored private let activityTracker: ActivityTracker
+    @ObservationIgnored private let browserTracker: BrowserTracker
+    @ObservationIgnored private var nmServer: NativeMessagingServer?
+    @ObservationIgnored private var procrastination = ProcrastinationDetector()
+    @ObservationIgnored private var lastDistractionAlert: ProcrastinationAlert?
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var lineCounter = 0
     @ObservationIgnored private var awaySince: Date?
@@ -89,7 +99,15 @@ final class AppModel {
         }
         self.db = openedDB
         let store = TaskStore(db: openedDB)
+        let spanStore = SpanStore(db: openedDB)
+        let loadedRules = (try? spanStore.fetchUserRules()) ?? []
+        let classifier = Classifier(userRules: loadedRules)
         self.store = store
+        self.spanStore = spanStore
+        self.userRules = loadedRules
+        self.classifier = classifier
+        self.activityTracker = ActivityTracker(store: spanStore, classifier: classifier)
+        self.browserTracker = BrowserTracker(store: spanStore, classifier: classifier)
 
         // Migrate UserDefaults from M0/M1 on first launch with SQLite.
         let legacyState = UserDefaults.standard.data(forKey: Keys.legacyState)
@@ -143,6 +161,16 @@ final class AppModel {
         activity.onBack = { [weak self] in self?.userCameBack() }
         activity.onPoll = { [weak self] in self?.checkIdle() }
         activity.start()
+        activityTracker.onAppActivated = { [weak self] bundleId, now in
+            self?.procrastination.recordAppSwitch(bundleId: bundleId, now: now)
+        }
+        activityTracker.start()
+        browserTracker.start()
+        let server = NativeMessagingServer { event in
+            AppModel.shared.browserTracker.receiveExtensionEvent(event)
+        }
+        server.start()
+        nmServer = server
         GlobalHotkeys.shared.configure(with: settings)
         tick()
     }
@@ -318,14 +346,54 @@ final class AppModel {
         openWindow(WindowID.main)
     }
 
+    func flushTrackingOnQuit() {
+        activityTracker.flushNow()
+        browserTracker.closeAndFlush()
+        nmServer?.stop()
+    }
+
     func handleNotificationAction(_ identifier: String) {
         if identifier == NotificationCategory.snoozeTooLongID {
             continuousWork.snooze(now: .now, minutes: 20)
+            procrastination.recordSnooze(now: .now)
             say("Snoozed for 20 minutes. Do not make this a habit.")
+            return
+        }
+        if identifier == NotificationCategory.backToWorkID {
+            showMainWindow()
+            return
+        }
+        if identifier == NotificationCategory.thisIsForWorkID {
+            markLastDistractionAsProductive()
             return
         }
         guard let action = NotificationCategory.action(for: identifier) else { return }
         perform(action, startedBy: "notification")
+    }
+
+    func addCategoryRule(kind: RuleKind, pattern: String, category: ActivityCategory) {
+        let trimmed = pattern.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        _ = try? spanStore.upsertUserRule(kind: kind, pattern: trimmed, category: category)
+        try? spanStore.reclassifyMatching(kind: kind, pattern: trimmed, to: category)
+        userRules = (try? spanStore.fetchUserRules()) ?? []
+        classifier.setUserRules(userRules)
+    }
+
+    func deleteCategoryRule(id: Int64) {
+        try? spanStore.deleteRule(id: id)
+        userRules = (try? spanStore.fetchUserRules()) ?? []
+        classifier.setUserRules(userRules)
+    }
+
+    func markLastDistractionAsProductive() {
+        guard let alert = lastDistractionAlert,
+              let ruleKind = alert.ruleKind,
+              let pattern = alert.rulePattern else { return }
+        addCategoryRule(kind: ruleKind, pattern: pattern, category: .productive)
+        procrastination.resetCurrentDistraction()
+        say("Marked '\(pattern)' as work. Noted.")
+        lastDistractionAlert = nil
     }
 
     func handleQuickAddNotification(text: String) {
@@ -614,8 +682,19 @@ final class AppModel {
     private func checkIdle() {
         rollDayIfNeeded()
         checkContinuousWork()
-        guard settings.pauseWhenIdle else { return }
+
         let idle = activity.secondsSinceInput(keyboardCounts: settings.keyboardCountsAsActivity)
+        let isCurrentlyIdle = idle >= 60
+        activityTracker.sampleFrontmostApp(
+            enabled: settings.trackApps,
+            trackTitles: settings.trackWindowTitles,
+            isIdle: isCurrentlyIdle,
+            sessionId: activeSessionID,
+            sessionKind: state.phase.kind?.dbKind
+        )
+        evaluateProcrastination(isIdle: isCurrentlyIdle)
+
+        guard settings.pauseWhenIdle else { return }
         let threshold = TimeInterval(settings.idleMinutes * 60)
         switch state.phase {
         case .running(.work, _, _, _) where idle >= threshold:
@@ -625,6 +704,81 @@ final class AppModel {
             apply { state, now in state.perform(.resume, now: now) }
         default:
             break
+        }
+    }
+
+    private func evaluateProcrastination(isIdle: Bool) {
+        let inWorkSession: Bool
+        if case .running(.work, _, _, _) = state.phase { inWorkSession = true } else { inWorkSession = false }
+
+        var subjectName: String?
+        var subjectKey: String?
+        var ruleKind: RuleKind?
+        var rulePattern: String?
+        var category: ActivityCategory = .neutral
+        var isYTEntertainment = false
+
+        if let web = browserTracker.currentWeb {
+            subjectName = web.ytChannel.map { "\($0) (YouTube)" } ?? web.domain
+            subjectKey = "web:\(web.domain):\(web.ytChannel ?? "")"
+            if let ch = web.ytChannel, web.domain.contains("youtube") {
+                ruleKind = .ytChannel
+                rulePattern = ch
+            } else {
+                ruleKind = .domain
+                rulePattern = web.domain
+            }
+            category = web.category
+            isYTEntertainment = web.isYouTubeEntertainment
+        } else if let app = activityTracker.currentApp {
+            subjectName = app.appName
+            subjectKey = "app:\(app.bundleId)"
+            ruleKind = .bundle
+            rulePattern = app.bundleId
+            category = app.category
+        }
+
+        let alerts = procrastination.evaluate(
+            now: .now,
+            inWorkSession: inWorkSession,
+            isIdle: isIdle,
+            hasUndoneTodos: !undoneTodayTasks.isEmpty,
+            subjectName: subjectName,
+            subjectKey: subjectKey,
+            ruleKind: ruleKind,
+            rulePattern: rulePattern,
+            category: category,
+            isYouTubeEntertainment: isYTEntertainment
+        )
+
+        for alert in alerts {
+            try? spanStore.recordProcrastination(ProcrastinationEventRecord(
+                ts: Int64(Date.now.timeIntervalSince1970),
+                sessionId: activeSessionID,
+                kind: alert.kind.rawValue,
+                subject: alert.subject,
+                durationSec: alert.durationSec,
+                severity: alert.severity
+            ))
+            lastDistractionAlert = alert
+            lineCounter += 1
+            let line = Voice.procrastinationLine(
+                subject: alert.subject,
+                severity: alert.severity,
+                tone: toneBand,
+                seed: lineCounter
+            )
+            say(line)
+            if settings.showNotifications {
+                if alert.severity >= 3 {
+                    Sounds.playWorkDone(settings: settings)
+                }
+                Notifier.shared.post(
+                    title: alert.severity >= 2 ? "Focus detour" : "Quick check-in",
+                    body: line,
+                    category: alert.ruleKind != nil ? .procrastination : nil
+                )
+            }
         }
     }
 
@@ -650,10 +804,13 @@ final class AppModel {
 
     private func userWentAway(_ reason: PauseReason) {
         if awaySince == nil { awaySince = .now }
+        activityTracker.markAway()
+        browserTracker.closeAndFlush()
         apply { state, now in state.autoPause(reason: reason, since: now) }
     }
 
     private func userCameBack() {
+        activityTracker.markBack()
         tick()
         guard let since = awaySince else { return }
         awaySince = nil
@@ -722,6 +879,7 @@ final class AppModel {
         if (try? DataPortability.performBackup(db: db, dayKey: currentDayKey, keepCount: 7)) != nil {
             try? store.saveSetting(currentDayKey, key: Keys.dbLastBackupDay)
         }
+        try? spanStore.pruneOldRawSpans(olderThanDays: settings.retentionDays)
     }
 
     // MARK: - Persistence

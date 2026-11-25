@@ -321,6 +321,7 @@ you're in a session and on task.
   on release tags (§8).
 - ✅ 8-hour soak: < 1% CPU average, < 120 MB RSS; spans sum to awake time
   within 1%.
+- *Progress:* ActivityTracker, BrowserTracker (AppleScript + Unix socket extension relay), `HoltNMHost`, MV3 Firefox + Chrome extensions, ~200 apps / ~650 domains defaults, Classifier + rules editor, ProcrastinationDetector, and Ubuntu `web-ext` CI job implemented. (8-hour physical Mac soak pending real-Mac verification.)
 
 **M4 — Screen understanding (on-device)**
 - ScreenObserver with exclusions, Vision OCR, rule labeler, History display.

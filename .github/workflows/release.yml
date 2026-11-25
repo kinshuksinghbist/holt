@@ -8,8 +8,8 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    name: Build & publish release
+  build-app:
+    name: Build Holt.app & DMG
     runs-on: macos-26
     timeout-minutes: 30
     steps:
@@ -35,10 +35,76 @@ jobs:
       - name: Make DMG
         run: scripts/make-dmg.sh
 
-      - name: Publish GitHub Release
+      - name: Upload macOS release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: |
+            dist/Holt.dmg
+            dist/Holt.dmg.sha256
+          if-no-files-found: error
+
+  build-extension:
+    name: Lint, package & sign extensions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Stage, lint & package extension
+        env:
+          HOLT_VERSION: ${{ github.ref_name }}
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          VERSION="${HOLT_VERSION#v}"
+          VERSION="${VERSION%%-*}"
+          export HOLT_VERSION="$VERSION"
+          bash scripts/build-extension.sh
+          web-ext lint --source-dir dist/extension/firefox
+          web-ext build --source-dir dist/extension/firefox --artifacts-dir dist/extension/artifacts --overwrite-dest
+          (cd dist/extension/chrome && zip -r "../artifacts/holt-companion-chrome-${VERSION}.zip" .)
+          if [[ -n "${AMO_JWT_ISSUER:-}" && -n "${AMO_JWT_SECRET:-}" ]]; then
+            web-ext sign --channel=unlisted \
+              --source-dir dist/extension/firefox \
+              --artifacts-dir dist/extension/artifacts \
+              --api-key "$AMO_JWT_ISSUER" \
+              --api-secret "$AMO_JWT_SECRET"
+          else
+            echo "AMO_JWT_ISSUER/SECRET not set: skipping unlisted Firefox signing."
+          fi
+
+      - name: Upload extension release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-extensions
+          path: dist/extension/artifacts/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: [build-app, build-extension]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          flags=(--generate-notes --title "Holt $HOLT_VERSION")
+          VERSION="${GITHUB_REF_NAME#v}"
+          flags=(--generate-notes --title "Holt $VERSION")
           if [[ "$GITHUB_REF_NAME" == *-* ]]; then flags+=(--prerelease); fi
-          gh release create "$GITHUB_REF_NAME" dist/Holt.dmg dist/Holt.dmg.sha256 "${flags[@]}"
+          gh release create "$GITHUB_REF_NAME" release-assets/* "${flags[@]}"

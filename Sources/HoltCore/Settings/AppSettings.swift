@@ -12,6 +12,20 @@ public enum SoundChoice: String, Codable, Sendable, CaseIterable {
     }
 }
 
+public enum YouTubePolicy: String, Codable, Sendable, CaseIterable {
+    case alwaysDistracting = "always_distracting"
+    case categoryBased = "category_based"
+    case educationalAllowed = "educational_allowed"
+
+    public var title: String {
+        switch self {
+        case .alwaysDistracting: "Always distracting"
+        case .categoryBased: "By YouTube category"
+        case .educationalAllowed: "Educational allowed in work"
+        }
+    }
+}
+
 /// A global hotkey using Carbon virtual keyCode + Carbon modifier flags.
 public struct HotkeyShortcut: Codable, Equatable, Sendable {
     public static let cmdMask: UInt32 = 1 << 8
@@ -99,6 +113,7 @@ public struct AppSettings: Equatable, Sendable {
     public static let cycleRange = 2...12
     public static let idleRange = 1...30
     public static let workingTooLongRange = 30...240
+    public static let retentionRange = 30...3650
 
     public var workMinutes = 25
     public var shortBreakMinutes = 5
@@ -122,6 +137,15 @@ public struct AppSettings: Equatable, Sendable {
     public var breakHotkey: HotkeyShortcut = .defaultTakeBreak
     public var endHotkey: HotkeyShortcut = .defaultEndSession
 
+    // Tracking (M3)
+    public var trackApps = true
+    public var trackWindowTitles = true
+    public var trackBrowsers = true
+    public var trackYouTube = true
+    public var youtubePolicy: YouTubePolicy = .educationalAllowed
+    public var retentionDays = 365
+    public var chromeExtensionId: String = ""
+
     public init() {}
 
     public var timerConfig: TimerConfig {
@@ -135,7 +159,6 @@ public struct AppSettings: Equatable, Sendable {
         )
     }
 
-    /// Default length in minutes for a session of `kind`.
     public func minutes(for kind: SessionKind) -> Int {
         switch kind {
         case .work: workMinutes
@@ -144,7 +167,6 @@ public struct AppSettings: Equatable, Sendable {
         }
     }
 
-    /// Every numeric setting forced into its allowed range.
     public func clamped() -> AppSettings {
         var s = self
         s.workMinutes = Self.clamp(workMinutes, Self.workRange)
@@ -153,6 +175,7 @@ public struct AppSettings: Equatable, Sendable {
         s.sessionsBeforeLongBreak = Self.clamp(sessionsBeforeLongBreak, Self.cycleRange)
         s.idleMinutes = Self.clamp(idleMinutes, Self.idleRange)
         s.workingTooLongMinutes = Self.clamp(workingTooLongMinutes, Self.workingTooLongRange)
+        s.retentionDays = Self.clamp(retentionDays, Self.retentionRange)
         s.soundVolume = min(max(soundVolume.isFinite ? soundVolume : 0.8, 0.0), 1.0)
         return s
     }
@@ -170,6 +193,8 @@ extension AppSettings: Codable {
         case playSounds, soundVolume, soundChoice, customSoundPath
         case showNotifications, jellyHaptics
         case hotkeysEnabled, startPauseHotkey, breakHotkey, endHotkey
+        case trackApps, trackWindowTitles, trackBrowsers, trackYouTube, youtubePolicy
+        case retentionDays, chromeExtensionId
     }
 
     public init(from decoder: Decoder) throws {
@@ -196,5 +221,12 @@ extension AppSettings: Codable {
         startPauseHotkey = try c.decodeIfPresent(HotkeyShortcut.self, forKey: .startPauseHotkey) ?? d.startPauseHotkey
         breakHotkey = try c.decodeIfPresent(HotkeyShortcut.self, forKey: .breakHotkey) ?? d.breakHotkey
         endHotkey = try c.decodeIfPresent(HotkeyShortcut.self, forKey: .endHotkey) ?? d.endHotkey
+        trackApps = try c.decodeIfPresent(Bool.self, forKey: .trackApps) ?? d.trackApps
+        trackWindowTitles = try c.decodeIfPresent(Bool.self, forKey: .trackWindowTitles) ?? d.trackWindowTitles
+        trackBrowsers = try c.decodeIfPresent(Bool.self, forKey: .trackBrowsers) ?? d.trackBrowsers
+        trackYouTube = try c.decodeIfPresent(Bool.self, forKey: .trackYouTube) ?? d.trackYouTube
+        youtubePolicy = try c.decodeIfPresent(YouTubePolicy.self, forKey: .youtubePolicy) ?? d.youtubePolicy
+        retentionDays = try c.decodeIfPresent(Int.self, forKey: .retentionDays) ?? d.retentionDays
+        chromeExtensionId = try c.decodeIfPresent(String.self, forKey: .chromeExtensionId) ?? d.chromeExtensionId
     }
 }

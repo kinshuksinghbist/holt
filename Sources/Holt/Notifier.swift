@@ -12,10 +12,13 @@ enum NotificationCategory: String, CaseIterable {
     case away = "holt.away"
     case workingTooLong = "holt.working-too-long"
     case quickAdd = "holt.quick-add"
+    case procrastination = "holt.procrastination"
 
     static let actionPrefix = "holt.action."
     static let snoozeTooLongID = "holt.custom.snooze-too-long"
     static let quickAddTextID = "holt.custom.quick-add-text"
+    static let backToWorkID = "holt.custom.back-to-work"
+    static let thisIsForWorkID = "holt.custom.this-is-for-work"
 
     var actionDefinitions: [(id: String, title: String)] {
         switch self {
@@ -48,6 +51,11 @@ enum NotificationCategory: String, CaseIterable {
             ]
         case .quickAdd:
             return []
+        case .procrastination:
+            return [
+                (Self.backToWorkID, "Back to work"),
+                (Self.thisIsForWorkID, "This is for work"),
+            ]
         }
     }
 

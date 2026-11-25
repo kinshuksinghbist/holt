@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Holt Companion",
+  "version": "0.1.0",
+  "description": "Reports your active tab URL, title, and YouTube metadata locally to Holt. Nothing leaves your Mac.",
+  "permissions": [
+    "tabs",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "background": {
+    "scripts": ["src/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["src/youtube-content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/youtube-page.js"],
+      "matches": ["*://*.youtube.com/*"]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "holt@kinshuksinghbist.github.io",
+      "strict_min_version": "109.0"
+    }
+  }
+}

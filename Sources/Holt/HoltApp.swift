@@ -46,6 +46,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         AppModel.shared.showMainWindow()
         return true
     }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        AppModel.shared.flushTrackingOnQuit()
+    }
 }
 
 /// Tiny append-only log at ~/Library/Logs/Holt/holt.log for diagnosing launch problems.

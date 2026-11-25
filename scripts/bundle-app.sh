@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds dist/Holt.app from the SwiftPM package and code-signs it.
+# Builds dist/Holt.app from the SwiftPM package and code-signs it (plus holt-nm-host).
 #
 # Env:
 #   HOLT_VERSION        marketing version (default 0.0.0)
@@ -15,31 +15,37 @@ APP="$ROOT/dist/Holt.app"
 
 cd "$ROOT"
 swift build -c release --product Holt
+swift build -c release --product holt-nm-host
 BIN_DIR="$(swift build -c release --show-bin-path)"
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Helpers"
 cp "$BIN_DIR/Holt" "$APP/Contents/MacOS/Holt"
+cp "$BIN_DIR/holt-nm-host" "$APP/Contents/Helpers/holt-nm-host"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy \
   -c "Set :CFBundleShortVersionString $VERSION" \
   -c "Set :CFBundleVersion $BUILD" \
   "$APP/Contents/Info.plist"
 
-# SwiftPM resource bundles (none yet) go in Contents/Resources.
+# SwiftPM resource bundles go in Contents/Resources.
 shopt -s nullglob
 for bundle in "$BIN_DIR"/*.bundle; do
   cp -R "$bundle" "$APP/Contents/Resources/"
 done
 
+HELPER_SIGN_ARGS=(--force --options runtime --sign "$IDENTITY")
 SIGN_ARGS=(--force --options runtime --entitlements Resources/Holt.entitlements --sign "$IDENTITY")
 if [[ "$IDENTITY" != "-" ]]; then
+  HELPER_SIGN_ARGS+=(--timestamp=none)
   SIGN_ARGS+=(--timestamp=none)
   SIGNED_WITH="certificate $IDENTITY"
 else
   SIGNED_WITH="ad-hoc signature"
 fi
+
+codesign "${HELPER_SIGN_ARGS[@]}" "$APP/Contents/Helpers/holt-nm-host"
 codesign "${SIGN_ARGS[@]}" "$APP"
-codesign --verify --strict --verbose=2 "$APP"
+codesign --verify --deep --strict --verbose=2 "$APP"
 
 echo "Built $APP — version $VERSION ($BUILD), $SIGNED_WITH"

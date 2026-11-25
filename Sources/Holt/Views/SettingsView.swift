@@ -8,6 +8,8 @@ struct SettingsView: View {
     @Bindable var model: AppModel
     @State private var dataStatusMessage: String?
     @State private var confirmResetStats = false
+    @State private var showRulesEditor = false
+    @State private var extensionStatus: String?
 
     var body: some View {
         Form {
@@ -96,6 +98,36 @@ struct SettingsView: View {
                 ToneSlider(model: model)
             }
 
+            Section("Tracking & browsers") {
+                Toggle("Track frontmost apps", isOn: $model.settings.trackApps)
+                Toggle("Read window titles (needs Accessibility)", isOn: $model.settings.trackWindowTitles)
+                    .disabled(!model.settings.trackApps)
+                Toggle("Track browser tabs (Safari, Chromium, Firefox)", isOn: $model.settings.trackBrowsers)
+                Toggle("Track YouTube video & category", isOn: $model.settings.trackYouTube)
+                    .disabled(!model.settings.trackBrowsers)
+                Picker("YouTube policy", selection: $model.settings.youtubePolicy) {
+                    ForEach(YouTubePolicy.allCases, id: \.self) { policy in
+                        Text(policy.title).tag(policy)
+                    }
+                }
+                .disabled(!model.settings.trackBrowsers || !model.settings.trackYouTube)
+
+                Stepper(value: $model.settings.retentionDays, in: AppSettings.retentionRange, step: 30) {
+                    LabeledContent("Keep raw history", value: "\(model.settings.retentionDays) days")
+                }
+
+                TextField("Chrome Extension ID (optional)", text: $model.settings.chromeExtensionId)
+                    .textFieldStyle(.roundedBorder)
+
+                HStack {
+                    Button("Install browser native host") { installNativeHost() }
+                    Button("Category rules (\(model.userRules.count))…") { showRulesEditor = true }
+                }
+                if let extensionStatus {
+                    Text(extensionStatus).font(.caption).foregroundStyle(.secondary)
+                }
+            }
+
             Section("Data & backups") {
                 HStack {
                     Button("Export JSON…") { exportJSON() }
@@ -128,6 +160,9 @@ struct SettingsView: View {
         .frame(minHeight: 660, idealHeight: 820)
         .onChange(of: model.settings) { model.settingsChanged() }
         .onChange(of: model.launchAtLogin) { model.applyLaunchAtLogin() }
+        .sheet(isPresented: $showRulesEditor) {
+            RulesEditorSheet(model: model)
+        }
         .confirmationDialog(
             "Reset all session & tracking stats?",
             isPresented: $confirmResetStats,
@@ -221,6 +256,17 @@ struct SettingsView: View {
         }
     }
 
+    private func installNativeHost() {
+        do {
+            let installed = try NativeMessagingInstaller.installAll(chromeExtensionId: model.settings.chromeExtensionId)
+            extensionStatus = installed.isEmpty
+                ? "No browser targets configured."
+                : "Installed native messaging for: \(installed.joined(separator: ", "))."
+        } catch {
+            extensionStatus = "Failed: \(error.localizedDescription)"
+        }
+    }
+
     private static var version: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
@@ -282,5 +328,76 @@ private struct HotkeyRow: View {
             NSEvent.removeMonitor(monitor)
             self.monitor = nil
         }
+    }
+}
+
+private struct RulesEditorSheet: View {
+    let model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var kind: RuleKind = .domain
+    @State private var pattern = ""
+    @State private var category: ActivityCategory = .productive
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Category rules").font(.title3.weight(.semibold))
+                Spacer()
+                Button("Done") { dismiss() }
+            }
+
+            HStack(spacing: 8) {
+                Picker("", selection: $kind) {
+                    ForEach(RuleKind.allCases, id: \.self) { k in
+                        Text(k.title).tag(k)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 140)
+
+                TextField("Pattern (e.g. youtube.com, com.apple.dt.Xcode)", text: $pattern)
+                    .textFieldStyle(.roundedBorder)
+
+                Picker("", selection: $category) {
+                    ForEach(ActivityCategory.allCases, id: \.self) { c in
+                        Text(c.title).tag(c)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 110)
+
+                Button("Add") {
+                    model.addCategoryRule(kind: kind, pattern: pattern, category: category)
+                    pattern = ""
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(pattern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+
+            List {
+                ForEach(model.userRules) { rule in
+                    HStack {
+                        Text(RuleKind(rawValue: rule.kind)?.title ?? rule.kind)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 120, alignment: .leading)
+                        Text(rule.pattern).font(.callout)
+                        Spacer()
+                        Text(rule.category.capitalized)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(rule.category == "productive" ? .green : (rule.category == "distracting" ? .red : .secondary))
+                        Button {
+                            if let id = rule.id { model.deleteCategoryRule(id: id) }
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+            }
+            .frame(minHeight: 240)
+        }
+        .padding(18)
+        .frame(width: 580)
     }
 }

@@ -9,6 +9,9 @@ struct HistoryView: View {
     @State private var activeDays: Set<String> = []
     @State private var dayTasks: [TaskItem] = []
     @State private var daySessions: [SessionRecord] = []
+    @State private var dayApps: [AppSpanRecord] = []
+    @State private var dayWebs: [WebSpanRecord] = []
+    @State private var dayProcrastination: [ProcrastinationEventRecord] = []
     @State private var dayNote: String = ""
     @State private var daySummary: DayStatsSummary?
 
@@ -142,9 +145,110 @@ struct HistoryView: View {
                     }
                 }
             }
+
+            if !topApps.isEmpty || !topSites.isEmpty {
+                HStack(alignment: .top, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Apps").font(.headline)
+                        ForEach(topApps.prefix(6)) { item in
+                            HStack {
+                                Text(item.label).font(.caption).lineLimit(1)
+                                Spacer()
+                                Text(TimeFormat.duration(TimeInterval(item.seconds)))
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                if item.category == ActivityCategory.distracting.rawValue {
+                                    Button("Work") {
+                                        model.addCategoryRule(kind: .bundle, pattern: item.key, category: .productive)
+                                        reloadDay()
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.mini)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Websites").font(.headline)
+                        ForEach(topSites.prefix(6)) { item in
+                            HStack {
+                                Text(item.label).font(.caption).lineLimit(1)
+                                Spacer()
+                                Text(TimeFormat.duration(TimeInterval(item.seconds)))
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                if item.category == ActivityCategory.distracting.rawValue {
+                                    Button("Work") {
+                                        model.addCategoryRule(kind: .domain, pattern: item.key, category: .productive)
+                                        reloadDay()
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.mini)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(10)
+                .holtGlass(cornerRadius: 12)
+            }
+
+            if !dayProcrastination.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Procrastination log (\(dayProcrastination.count))").font(.headline)
+                    ForEach(dayProcrastination.prefix(6)) { ev in
+                        HStack {
+                            Text(ev.subject ?? ev.kind).font(.caption)
+                            Spacer()
+                            Text("lvl \(ev.severity)")
+                                .font(.caption2)
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                }
+                .padding(10)
+                .holtGlass(cornerRadius: 12)
+            }
         }
         .padding(16)
         .holtGlass(cornerRadius: 16)
+    }
+
+    private struct UsageItem: Identifiable {
+        let id: String
+        let key: String
+        let label: String
+        let seconds: Int
+        let category: String
+    }
+
+    private var topApps: [UsageItem] {
+        var totals: [String: (name: String, sec: Int, cat: String)] = [:]
+        for span in dayApps {
+            let dur = Int(max(0, span.endedAt - span.startedAt))
+            var entry = totals[span.bundleId] ?? (span.appName, 0, span.category ?? "neutral")
+            entry.sec += dur
+            entry.cat = span.category ?? entry.cat
+            totals[span.bundleId] = entry
+        }
+        return totals.map { UsageItem(id: $0.key, key: $0.key, label: $0.value.name, seconds: $0.value.sec, category: $0.value.cat) }
+            .sorted { $0.seconds > $1.seconds }
+    }
+
+    private var topSites: [UsageItem] {
+        var totals: [String: (sec: Int, cat: String)] = [:]
+        for span in dayWebs {
+            let dur = Int(max(0, span.endedAt - span.startedAt))
+            var entry = totals[span.domain] ?? (0, span.category ?? "neutral")
+            entry.sec += dur
+            entry.cat = span.category ?? entry.cat
+            totals[span.domain] = entry
+        }
+        return totals.map { UsageItem(id: $0.key, key: $0.key, label: $0.key, seconds: $0.value.sec, category: $0.value.cat) }
+            .sorted { $0.seconds > $1.seconds }
     }
 
     private var monthTitle: String {
@@ -196,6 +300,9 @@ struct HistoryView: View {
     private func reloadDay() {
         dayTasks = (try? model.store.fetchTasks(day: selectedDay)) ?? []
         daySessions = (try? model.store.fetchSessions(day: selectedDay)) ?? []
+        dayApps = (try? model.spanStore.fetchAppSpans(day: selectedDay)) ?? []
+        dayWebs = (try? model.spanStore.fetchWebSpans(day: selectedDay)) ?? []
+        dayProcrastination = (try? model.spanStore.fetchProcrastinationEvents(day: selectedDay)) ?? []
         dayNote = (try? model.store.fetchDayNote(day: selectedDay)) ?? ""
         daySummary = try? model.store.daySummary(day: selectedDay)
     }

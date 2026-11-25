@@ -52,3 +52,33 @@ jobs:
             dist/Holt.dmg
             dist/Holt.dmg.sha256
           if-no-files-found: error
+
+  extension:
+    name: Lint & package browser extensions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Stage & lint extension
+        env:
+          HOLT_VERSION: 0.0.${{ github.run_number }}
+        run: |
+          bash scripts/build-extension.sh
+          web-ext lint --source-dir dist/extension/firefox
+          web-ext build --source-dir dist/extension/firefox --artifacts-dir dist/extension/artifacts --overwrite-dest
+          (cd dist/extension/chrome && zip -r ../artifacts/holt-companion-chrome-0.0.${{ github.run_number }}.zip .)
+
+      - name: Upload extension artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Holt-Extensions-0.0.${{ github.run_number }}
+          path: dist/extension/artifacts/*
+          if-no-files-found: error
