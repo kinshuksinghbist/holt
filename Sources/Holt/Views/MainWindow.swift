@@ -26,6 +26,22 @@ struct MainWindowView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
+                if model.settings.showCoachMarks && model.settings.hasCompletedOnboarding {
+                    HStack(spacing: 10) {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(.orange)
+                        Text("Tip: Look for Holt's icon in your menu bar next to the clock, stretch the jelly to pick any duration, or press ⌃⌥Space anywhere.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Got it") { model.dismissCoachMarks() }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
+                    .padding(10)
+                    .holtGlass(cornerRadius: 12)
+                }
+
                 HStack(alignment: .top, spacing: 20) {
                     TimerHero(model: model, compact: false)
                         .frame(maxWidth: 420)
@@ -65,6 +81,9 @@ struct MainWindowView: View {
         .sheet(isPresented: $model.isPlanSheetPresented) {
             PlanYourDaySheet(model: model)
         }
+        .sheet(isPresented: $model.isOnboardingPresented) {
+            OnboardingView(model: model)
+        }
         .toolbar {
             ToolbarItemGroup {
                 Button {
@@ -82,6 +101,13 @@ struct MainWindowView: View {
                     Label("Plan day", systemImage: "sun.horizon")
                 }
                 .help("Plan your day")
+
+                Button {
+                    model.replayOnboardingTour()
+                } label: {
+                    Label("Tour", systemImage: "questionmark.circle")
+                }
+                .help("Replay onboarding tour")
 
                 Button {
                     model.openWindow(WindowID.settings)

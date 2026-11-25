@@ -54,6 +54,8 @@ final class AppModel {
     var pendingSessionNoteId: Int64?
     /// Shown on first activity of a new Holt day when leftovers or recurring tasks await.
     var isPlanSheetPresented = false
+    /// Shown on first launch or via "Replay tour" in Settings.
+    var isOnboardingPresented = false
     private(set) var planPreview = DayPlanPreview(leftovers: [], dueRecurring: [])
 
     /// Length picked with the jelly or arrow keys for the next session, in minutes.
@@ -172,7 +174,11 @@ final class AppModel {
                 ?? todayTasks.first(where: { $0.taskStatus == .todo })?.id
         }
         checkNightlyBackupIfNeeded()
-        checkPlanYourDayIfNeeded()
+        if !settings.hasCompletedOnboarding {
+            isOnboardingPresented = true
+        } else {
+            checkPlanYourDayIfNeeded()
+        }
         syncTicker()
     }
 
@@ -353,6 +359,26 @@ final class AppModel {
             return
         }
         pendingMinutes = JellyDial.adjusted(current, bySteps: delta)
+    }
+
+    func replayOnboardingTour() {
+        settings.onboardingStep = 0
+        settingsChanged()
+        isOnboardingPresented = true
+    }
+
+    func completeOnboarding(startSession: Bool) {
+        settings.hasCompletedOnboarding = true
+        settingsChanged()
+        isOnboardingPresented = false
+        if startSession && canSetDuration {
+            startUpcoming()
+        }
+    }
+
+    func dismissCoachMarks() {
+        settings.showCoachMarks = false
+        settingsChanged()
     }
 
     func openWindow(_ id: String) {

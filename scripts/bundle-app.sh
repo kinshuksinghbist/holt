@@ -19,10 +19,13 @@ swift build -c release --product holt-nm-host
 BIN_DIR="$(swift build -c release --show-bin-path)"
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Helpers"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Helpers" "$APP/Contents/Frameworks"
 cp "$BIN_DIR/Holt" "$APP/Contents/MacOS/Holt"
 cp "$BIN_DIR/holt-nm-host" "$APP/Contents/Helpers/holt-nm-host"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+if [[ -f Resources/Holt.icns ]]; then
+  cp Resources/Holt.icns "$APP/Contents/Resources/Holt.icns"
+fi
 /usr/libexec/PlistBuddy \
   -c "Set :CFBundleShortVersionString $VERSION" \
   -c "Set :CFBundleVersion $BUILD" \
@@ -32,6 +35,10 @@ cp Resources/Info.plist "$APP/Contents/Info.plist"
 shopt -s nullglob
 for bundle in "$BIN_DIR"/*.bundle; do
   cp -R "$bundle" "$APP/Contents/Resources/"
+done
+
+for fw in "$BIN_DIR"/*.framework; do
+  cp -R "$fw" "$APP/Contents/Frameworks/"
 done
 
 HELPER_SIGN_ARGS=(--force --options runtime --sign "$IDENTITY")
@@ -44,6 +51,9 @@ else
   SIGNED_WITH="ad-hoc signature"
 fi
 
+for fw in "$APP/Contents/Frameworks/"*.framework; do
+  codesign "${HELPER_SIGN_ARGS[@]}" "$fw"
+done
 codesign "${HELPER_SIGN_ARGS[@]}" "$APP/Contents/Helpers/holt-nm-host"
 codesign "${SIGN_ARGS[@]}" "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"

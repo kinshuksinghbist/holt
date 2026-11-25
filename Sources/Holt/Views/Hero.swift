@@ -10,7 +10,7 @@ struct TimerHero: View {
     var body: some View {
         VStack(spacing: compact ? 10 : 16) {
             ModeChip(title: model.modeTitle, mode: model.animationMode)
-            ClimbView(progress: model.progress, mode: model.animationMode)
+            MascotAnimationView(progress: model.progress, mode: model.animationMode)
                 .frame(height: compact ? 56 : 120)
             JellyTimer(model: model, restRadius: compact ? 50 : 76)
             ActionButtons(model: model, compact: compact)
@@ -129,71 +129,4 @@ struct HoltQuote: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Holt says: \(text)")
     }
-}
-
-/// Placeholder for the Rive mascot: a climber moves up the mountain as the session
-/// progresses and plants a flag at the top; the sun comes out on breaks.
-struct ClimbView: View {
-    let progress: Double
-    let mode: AnimationMode
-
-    var body: some View {
-        // Copy inputs into locals so the renderer closure never touches the (main-actor) view.
-        let progress = progress
-        let mode = mode
-        let tint = mode.tint
-        return Canvas { context, size in
-            let w = size.width
-            let h = size.height
-            let foot = CGPoint(x: 0, y: h)
-            let peak = CGPoint(x: w * 0.6, y: h * 0.1)
-
-            var mountain = Path()
-            mountain.move(to: foot)
-            mountain.addLine(to: peak)
-            mountain.addLine(to: CGPoint(x: w, y: h))
-            mountain.closeSubpath()
-            context.fill(mountain, with: .color(Color.secondary.opacity(0.22)))
-
-            if mode == .rest {
-                let d = h * 0.34
-                context.fill(Path(ellipseIn: CGRect(x: w * 0.8, y: h * 0.05, width: d, height: d)),
-                             with: .color(Color.orange.opacity(0.85)))
-            }
-
-            let climbing = mode == .work || mode == .paused
-            let p = climbing ? min(1, max(0, progress)) : 0
-            let base = lerp(foot, peak, 0.1)
-            let climber = lerp(foot, peak, 0.1 + 0.9 * p)
-
-            var trail = Path()
-            trail.move(to: base)
-            trail.addLine(to: climber)
-            context.stroke(trail, with: .color(tint),
-                           style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 5]))
-
-            let r: CGFloat = 6
-            context.fill(Path(ellipseIn: CGRect(x: climber.x - r, y: climber.y - r, width: 2 * r, height: 2 * r)),
-                         with: .color(tint))
-
-            if p >= 0.999 {
-                var pole = Path()
-                pole.move(to: peak)
-                pole.addLine(to: CGPoint(x: peak.x, y: peak.y - 18))
-                context.stroke(pole, with: .color(Color.primary), lineWidth: 2)
-                var flag = Path()
-                flag.move(to: CGPoint(x: peak.x, y: peak.y - 18))
-                flag.addLine(to: CGPoint(x: peak.x + 14, y: peak.y - 14))
-                flag.addLine(to: CGPoint(x: peak.x, y: peak.y - 10))
-                flag.closeSubpath()
-                context.fill(flag, with: .color(Color.red))
-            }
-        }
-        .accessibilityLabel("Climb progress \(Int(progress * 100)) percent")
-    }
-}
-
-/// Point a fraction `t` of the way from `a` to `b`.
-private func lerp(_ a: CGPoint, _ b: CGPoint, _ t: Double) -> CGPoint {
-    CGPoint(x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t)
 }

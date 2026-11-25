@@ -347,6 +347,7 @@ you're in a session and on task.
 - Rive runtime + art drop-in; onboarding (7 steps) + coach-marks + tips;
   empty/error states; VoiceOver audit; performance pass; README + screenshots.
 - ✅ New user reaches a completed first session in < 5 minutes in hallway tests.
+- *Progress:* `RiveRuntime` (`rive-ios`) linked with `MascotAnimationView` (`progress` + `mode` state-machine inputs and upgraded `ClimbView` fallback), 7-step `OnboardingView` with live permission checks & deep links, coach-marks, app icon (`Holt.icns`), and README updated for `v1.0.0`. (Interactive hallway tests & screenshots pending real-Mac UI verification.)
 
 ### Phase 2
 - **P2.1 Notch notifications** — borderless non-activating `NSPanel` at the

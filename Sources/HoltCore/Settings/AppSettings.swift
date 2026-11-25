@@ -182,6 +182,11 @@ public struct AppSettings: Equatable, Sendable {
     public var autoSessionDetectedWork = false
     public var scheduledFocusBlocks: [FocusBlockSchedule] = []
 
+    // Walkthrough & polish (M7)
+    public var hasCompletedOnboarding = false
+    public var onboardingStep = 0
+    public var showCoachMarks = true
+
     public init() {}
 
     public var timerConfig: TimerConfig {
@@ -244,6 +249,7 @@ extension AppSettings: Codable {
         case enableMorningBrief, morningBriefHour, enableEODSummary, eodSummaryHour
         case enableWeeklyReview, weeklyReviewWeekday
         case autoSessionDetectedWork, scheduledFocusBlocks
+        case hasCompletedOnboarding, onboardingStep, showCoachMarks
     }
 
     public init(from decoder: Decoder) throws {
@@ -297,5 +303,8 @@ extension AppSettings: Codable {
         weeklyReviewWeekday = try c.decodeIfPresent(Int.self, forKey: .weeklyReviewWeekday) ?? d.weeklyReviewWeekday
         autoSessionDetectedWork = try c.decodeIfPresent(Bool.self, forKey: .autoSessionDetectedWork) ?? d.autoSessionDetectedWork
         scheduledFocusBlocks = try c.decodeIfPresent([FocusBlockSchedule].self, forKey: .scheduledFocusBlocks) ?? d.scheduledFocusBlocks
+        hasCompletedOnboarding = try c.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? d.hasCompletedOnboarding
+        onboardingStep = try c.decodeIfPresent(Int.self, forKey: .onboardingStep) ?? d.onboardingStep
+        showCoachMarks = try c.decodeIfPresent(Bool.self, forKey: .showCoachMarks) ?? d.showCoachMarks
     }
 }

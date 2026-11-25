@@ -12,6 +12,19 @@ struct PanelView: View {
     var body: some View {
         VStack(spacing: 10) {
             header
+            if model.settings.showCoachMarks && model.settings.hasCompletedOnboarding {
+                HStack(spacing: 6) {
+                    Text("Tip: Stretch the jelly to set any length, or press ⌃⌥Space anywhere.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Got it") { model.dismissCoachMarks() }
+                        .buttonStyle(.borderless)
+                        .font(.caption2)
+                }
+                .padding(8)
+                .holtGlass(cornerRadius: 8)
+            }
             TimerHero(model: model, compact: true)
             taskPickerRow
             if model.pendingSessionNoteId != nil {

@@ -277,6 +277,10 @@ struct SettingsView: View {
                 if let message = model.loginItemMessage {
                     Text(message).font(.caption).foregroundStyle(.orange)
                 }
+                Button("Replay onboarding tour…") {
+                    model.replayOnboardingTour()
+                    model.showMainWindow()
+                }
                 LabeledContent("Version", value: Self.version)
             }
         }

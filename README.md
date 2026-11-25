@@ -8,39 +8,33 @@ the warmth of a stapler.
 
 > "Session complete. No collapse into digital nonsense. Growth."
 
-Everything stays on your Mac: one local SQLite database, no account, no cloud.
+Everything stays on your Mac: one local SQLite database (`~/Library/Application Support/Holt/holt.sqlite`), no account, no cloud, zero network calls in Phase 1.
 
 ## Status
 
-**Milestone M6 complete** (M7 next). What works today:
+**Phase 1 (`v1.0.0`) feature-complete** across milestones M0–M7. Built and tested on GitHub Actions (`macos-26` + `ubuntu-latest`):
 
-- **Jelly timer** — grab the jelly and stretch it to pick a session length
-  (5–60 min in 5s, then up to 3 h); it ticks with sound and trackpad haptics at
-  each step and starts when you let go. Tap it to start, arrow keys adjust it.
-  It shrinks as the session runs and jiggles while paused.
-- Menu bar timer: deep work, short/long breaks, pause/resume, take break, end,
-  end break → next session ready. Long break after N completed sessions; ending
-  early never counts.
-- **Focus guard** — sessions pause by themselves when you're idle (default
-  5 min, retroactively, so idle minutes never count), when the Mac sleeps or
-  the screen locks; they resume when you're back.
-- Notifications with actions (Skip break, Start next session, Resume, End).
-- Settings window: lengths, cycle, auto-start, idle pause, sounds,
-  notifications, haptics, open at login.
-- Today's focused time and sessions; Holt's feed of everything he's said.
-- Tone slider (Polite ↔ Punchy ↔ Strict) that changes Holt's wording.
+- **Menu bar panel & main window** — AppKit `NSStatusItem` + `NSPopover` quick panel and multi-tab main window (`Today`, `History`, `Stats`).
+- **Jelly stretch timer & Pomodoro engine** — grab the jelly and stretch it to pick any duration (5–60 min in 5s, then up to 3 h) with synthesized Holt chimes and trackpad haptics; shrinks as time runs, jiggles while paused, Reduce Motion support.
+- **Focus guard & global hotkeys** — retroactive idle pause, sleep/lock auto-pause, working-too-long nudge, `"Keep going 10 m"` extension, and configurable Carbon hotkeys (`⌃⌥Space`, `⌃⌥B`, `⌃⌥E`).
+- **Tasks, lists, notes & history** — SQLite via GRDB (`DatabasePool` WAL), default + custom lists, priorities, recurrence (`daily`/`weekdays`/`weekly`), rollover chains (`carried_from_id`, `root_id`), skip counts, day scratchpad + session notes, Plan Your Day sheet, `⌘N` / panel / notification text-reply quick add, JSON/CSV export & import, and 7-day rolling SQLite backups.
+- **App, website & YouTube tracking** — frontmost app spans (with optional Accessibility window titles), Safari/Chromium AppleScript tracking, `holt-nm-host` native messaging binary + MV3 Firefox & Chrome extensions with YouTube category/channel extraction, ~200 apps & ~650 domains defaults, custom rules editor (`"This is for work"`), and escalating procrastination detector.
+- **On-device screen understanding (opt-in)** — `ScreenCaptureKit` frontmost-window capture + Apple Vision OCR entirely in memory (images discarded immediately, never saved to disk), with built-in password manager / banking / private-window exclusions.
+- **Stats & rollups** — incremental & nightly `daily_rollup` / `hourly_rollup`, range presets, Swift Charts monthly heatmap, hourly bars, 24-h radial Focus Clock, 24-h timeline ribbon, Canvas Switch River Sankey, time exchange rates, Mountain Log, 7 Creative Cards, Focus Score with formula tooltip, and Holt's verdict.
+- **Holt's voice & nudges** — SQL-backed `FactSheet` (`"What Holt knows"` debug view), 432 original templates across 18 triggers × 3 tones in `Resources/voice/*.json`, 7-day no-repeat memory, slang mix & profanity controls, quiet hours, Focus/DND awareness, hourly/varied reminders, morning brief / EOD summary / weekly review, `"Holt, quiet for 1 h"`, and auto-sessions (detected productive work + scheduled focus blocks).
+- **Animation & walkthrough** — `RiveRuntime` mascot layer (`progress` + `mode` state-machine inputs) with built-in SwiftUI `ClimbView` fallback, 7-step onboarding tour with live permission checks & System Settings deep links, and dismissible coach-marks.
 
-The full product is specified in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md);
-the build plan and milestones are in [docs/PLAN.md](docs/PLAN.md).
+The full product specification is in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md);
+the engineering plan is in [docs/PLAN.md](docs/PLAN.md).
 
-## Install a CI build
+## Install a CI / Release build
 
-Every push to `main` is built by GitHub Actions. Open the latest successful
-[CI run](../../actions/workflows/ci.yml), download the `Holt-…` artifact, unzip,
-open `Holt.dmg` and drag Holt to Applications.
+Download `Holt.dmg` (and optionally the Firefox/Chrome companion extensions) from
+the [GitHub Releases](../../releases) page or latest [CI run](../../actions/workflows/ci.yml),
+open `Holt.dmg`, and drag Holt to `/Applications`.
 
-Builds are **not notarized** (no Apple Developer ID yet), so macOS blocks the
-first launch. Either:
+Builds are **not notarized** (no Apple Developer ID in Phase 1), so macOS blocks
+the first launch. Either:
 
 - open **System Settings → Privacy & Security** and click **Open Anyway**, or
 - run `xattr -dr com.apple.quarantine /Applications/Holt.app`.
@@ -52,29 +46,29 @@ macOS 26.
 
 ```bash
 swift test                # logic tests (HoltCore)
-scripts/bundle-app.sh     # builds and ad-hoc signs dist/Holt.app
-scripts/make-dmg.sh       # dist/Holt.dmg
+scripts/bundle-app.sh     # builds Holt + holt-nm-host and signs dist/Holt.app
+scripts/make-dmg.sh       # packages dist/Holt.dmg
+scripts/build-extension.sh # stages Firefox + Chrome MV3 extensions
 ```
 
-Needs Xcode 26 (Swift 6.2). CI is the reference build machine — see
+Needs Xcode 26 (Swift 6.2+). CI is the reference build machine — see
 [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
-### Optional: stable signing in CI
+### Optional: stable signing & Firefox extension signing in CI
 
-macOS ties permissions (Accessibility, Screen Recording, Automation) to the
-app's signature. Ad-hoc signatures change on every build, so each update asks
-again. To avoid that without a paid Developer ID, add a self-signed
-code-signing certificate as repository secrets `MACOS_CERT_P12` (base64 of the
-`.p12`) and `MACOS_CERT_PASSWORD`; CI then signs with it automatically.
+- **macOS:** Add `MACOS_CERT_P12` (base64 `.p12`) and `MACOS_CERT_PASSWORD` secrets so privacy permissions survive app updates.
+- **Firefox:** Add `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` secrets so release tags sign the unlisted `.xpi` with Mozilla AMO.
 
 ## Project layout
 
 ```
-Sources/HoltCore   all product logic (no UI) — session engine, voice, …
-Sources/Holt       the SwiftUI menu bar app
-Tests/             swift-testing tests for HoltCore
-Resources/         Info.plist, entitlements
-scripts/           bundle, DMG, CI signing
+Sources/HoltCore   pure Swift product logic (no UI) — engine, SQLite, voice, stats, tracking
+Sources/Holt       SwiftUI + AppKit menu bar app
+Sources/HoltNMHost native-messaging host binary embedded in Contents/Helpers
+Tests/             swift-testing suites for HoltCore
+extension/         MV3 WebExtension (Firefox + Chrome manifests & YouTube metadata)
+Resources/         Info.plist, entitlements, app icon
+scripts/           bundle, DMG, extension staging, CI signing
 docs/              product spec and engineering plan
 ```
 

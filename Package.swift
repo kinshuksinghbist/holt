@@ -11,6 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/groue/GRDB.swift.git", from: "7.0.0"),
+        .package(url: "https://github.com/rive-app/rive-ios.git", from: "6.24.0"),
     ],
     targets: [
         // All product logic. No SwiftUI imports here — keeps it fast to test.
@@ -24,7 +25,10 @@ let package = Package(
         // The macOS app: menu bar item, panel, main window.
         .executableTarget(
             name: "Holt",
-            dependencies: ["HoltCore"],
+            dependencies: [
+                "HoltCore",
+                .product(name: "RiveRuntime", package: "rive-ios"),
+            ],
             resources: [.process("Resources")]
         ),
         // Native-messaging host launched by browsers; relays tab/YouTube events over Unix socket.

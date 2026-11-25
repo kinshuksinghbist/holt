@@ -8,6 +8,8 @@
 	<string>Holt</string>
 	<key>CFBundleExecutable</key>
 	<string>Holt</string>
+	<key>CFBundleIconFile</key>
+	<string>Holt</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.kinshuksinghbist.holt</string>
 	<key>CFBundleInfoDictionaryVersion</key>
