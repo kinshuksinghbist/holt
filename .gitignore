@@ -1,0 +1,16 @@
+# SwiftPM / Xcode
+.build/
+.swiftpm/
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+
+# Build output
+dist/
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/

@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish release
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Version from tag
+        run: |
+          echo "HOLT_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          echo "HOLT_BUILD=${{ github.run_number }}" >> "$GITHUB_ENV"
+
+      - name: Test (HoltCore)
+        run: swift test
+
+      - name: Choose signing identity
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: scripts/ci-signing.sh
+
+      - name: Build Holt.app
+        run: scripts/bundle-app.sh
+
+      - name: Make DMG
+        run: scripts/make-dmg.sh
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=(--generate-notes --title "Holt $HOLT_VERSION")
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" dist/Holt.dmg dist/Holt.dmg.sha256 "${flags[@]}"

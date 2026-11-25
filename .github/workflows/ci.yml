@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test & build Holt.app
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Test (HoltCore)
+        run: swift test
+
+      - name: Choose signing identity
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: scripts/ci-signing.sh
+
+      - name: Build Holt.app
+        env:
+          HOLT_VERSION: 0.0.${{ github.run_number }}
+          HOLT_BUILD: ${{ github.run_number }}
+        run: scripts/bundle-app.sh
+
+      - name: Make DMG
+        run: scripts/make-dmg.sh
+
+      - name: Upload Holt.dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: Holt-0.0.${{ github.run_number }}
+          path: |
+            dist/Holt.dmg
+            dist/Holt.dmg.sha256
+          if-no-files-found: error
