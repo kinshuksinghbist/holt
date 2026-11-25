@@ -6,9 +6,14 @@ struct MenuBarLabel: View {
     let model: AppModel
 
     var body: some View {
-        let title = model.menuBarTitle
-        Text("\(Image(systemName: model.menuBarSymbol))\(title.isEmpty ? "" : " " + title)")
-            .monospacedDigit()
+        // Standard menu bar label: an SF Symbol, plus the countdown while a session exists.
+        HStack(spacing: 4) {
+            Image(systemName: model.menuBarSymbol)
+            if !model.menuBarTitle.isEmpty {
+                Text(model.menuBarTitle).monospacedDigit()
+            }
+        }
+        .onAppear { Diagnostics.log("menu bar label appeared") }
     }
 }
 

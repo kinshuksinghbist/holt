@@ -1,7 +1,9 @@
+import AppKit
 import Foundation
 import HoltCore
 import Observation
 import ServiceManagement
+import SwiftUI
 
 /// What the animation layer should show.
 enum AnimationMode: Equatable {
@@ -34,6 +36,8 @@ final class AppModel {
     var launchAtLogin: Bool
     private(set) var loginItemMessage: String?
 
+    /// SwiftUI's window opener, captured by the main window so AppKit code can reopen it.
+    @ObservationIgnored var windowOpener: OpenWindowAction?
     @ObservationIgnored private let activity: ActivityMonitor
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var lineCounter = 0
@@ -214,6 +218,15 @@ final class AppModel {
             return
         }
         pendingMinutes = JellyDial.adjusted(current, bySteps: delta)
+    }
+
+    func showMainWindow() {
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue.hasPrefix(WindowID.main) == true }) {
+            window.makeKeyAndOrderFront(nil)
+        } else {
+            windowOpener?.callAsFunction(id: WindowID.main)
+        }
+        NSApp.activate()
     }
 
     func handleNotificationAction(_ identifier: String) {

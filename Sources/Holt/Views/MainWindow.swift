@@ -9,6 +9,10 @@ struct MainWindowView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                Label("Holt also lives in your menu bar — look for \(Image(systemName: "scope")) near the clock.",
+                      systemImage: "menubar.arrow.up.rectangle")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 HStack(alignment: .top, spacing: 20) {
                     TimerHero(model: model, compact: false)
                         .frame(maxWidth: 440)
@@ -26,6 +30,11 @@ struct MainWindowView: View {
             .padding(24)
         }
         .frame(minWidth: 820, minHeight: 640)
+        .onAppear {
+            // Lets AppKit code (reopen) open windows through SwiftUI.
+            model.windowOpener = openWindow
+            Diagnostics.log("main window appeared")
+        }
         .toolbar {
             ToolbarItem {
                 Button {
