@@ -28,6 +28,8 @@ final class AppModel {
     let store: TaskStore
     let spanStore: SpanStore
     let screenStore: ScreenStore
+    let rollupEngine: RollupEngine
+    let statsQuery: StatsQuery
     let classifier: Classifier
 
     private(set) var state: SessionState
@@ -104,11 +106,15 @@ final class AppModel {
         let store = TaskStore(db: openedDB)
         let spanStore = SpanStore(db: openedDB)
         let screenStore = ScreenStore(db: openedDB)
+        let rollupEngine = RollupEngine(db: openedDB)
+        let statsQuery = StatsQuery(db: openedDB)
         let loadedRules = (try? spanStore.fetchUserRules()) ?? []
         let classifier = Classifier(userRules: loadedRules)
         self.store = store
         self.spanStore = spanStore
         self.screenStore = screenStore
+        self.rollupEngine = rollupEngine
+        self.statsQuery = statsQuery
         self.userRules = loadedRules
         self.classifier = classifier
         self.activityTracker = ActivityTracker(store: spanStore, classifier: classifier)
@@ -601,6 +607,7 @@ final class AppModel {
                     try? store.finishSession(sessionId: sid, endReason: "completed", activeSec: active, at: now)
                     if kind == .work { pendingSessionNoteId = sid }
                     activeSessionID = nil
+                    _ = try? rollupEngine.recomputeDay(currentDayKey)
                 }
             case .endedEarly(let kind):
                 if let sid = activeSessionID {
@@ -609,6 +616,7 @@ final class AppModel {
                     try? store.finishSession(sessionId: sid, endReason: reason, activeSec: active, at: now)
                     if kind == .work && active >= 60 { pendingSessionNoteId = sid }
                     activeSessionID = nil
+                    _ = try? rollupEngine.recomputeDay(currentDayKey)
                 }
             case .paused(let reason):
                 if let sid = activeSessionID {
@@ -904,6 +912,10 @@ final class AppModel {
     private func checkNightlyBackupIfNeeded() {
         let lastBackup = try? store.loadSetting(String.self, key: Keys.dbLastBackupDay)
         guard lastBackup != currentDayKey else { return }
+        if let yesterday = HoltDay.addingDays(-1, toKey: currentDayKey) {
+            _ = try? rollupEngine.recomputeDay(yesterday)
+        }
+        _ = try? rollupEngine.recomputeDay(currentDayKey)
         if (try? DataPortability.performBackup(db: db, dayKey: currentDayKey, keepCount: 7)) != nil {
             try? store.saveSetting(currentDayKey, key: Keys.dbLastBackupDay)
         }

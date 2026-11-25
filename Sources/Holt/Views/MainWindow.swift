@@ -52,7 +52,7 @@ struct MainWindowView: View {
                 case .history:
                     HistoryView(model: model)
                 case .stats:
-                    ComingNext()
+                    StatsView(model: model)
                 }
             }
             .padding(24)

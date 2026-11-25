@@ -333,6 +333,7 @@ you're in a session and on task.
   hourly bars; top / least / shifted-from / shifted-to; Sankey; focus clock;
   creative cards; exchange rates; mountain log; focus score.
 - ✅ Stats render a 1-year synthetic DB in < 150 ms.
+- *Progress:* `RollupEngine`, `StatsQuery`, `StatsView` (Swift Charts heatmap, hourly bars, radial focus clock, 24-h ribbon, Canvas Switch River Sankey, exchange rates, mountain log, creative cards, verdict) implemented and benchmarked in `StatsTests` (< 150 ms on 1-year synthetic DB).
 
 **M6 — Holt's voice & nudges**
 - FactSheet; full template library; NudgeEngine with policy, escalation,
