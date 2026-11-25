@@ -44,7 +44,7 @@ public struct ContinuousWorkTracker: Equatable, Codable, Sendable {
             hasNudgedSinceReset = true
             return true
 
-        case .paused(.work, _, _, _):
+        case .paused:
             lastSampleAt = nil
             return false
 
@@ -55,6 +55,10 @@ public struct ContinuousWorkTracker: Equatable, Codable, Sendable {
             } else if let started = breakStartedAt, now.timeIntervalSince(started) >= 60 {
                 reset()
             }
+            return false
+
+        case .running:
+            lastSampleAt = nil
             return false
 
         case .ready(.work):
