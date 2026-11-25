@@ -326,6 +326,7 @@ you're in a session and on task.
 **M4 — Screen understanding (on-device)**
 - ScreenObserver with exclusions, Vision OCR, rule labeler, History display.
 - ✅ ≥ 80% label accuracy on the labelled set; image never written to disk.
+- *Progress:* `ScreenLabeler`, `ScreenExclusions`, `ScreenStore`, and `ScreenObserver` (`SCScreenshotManager` + `VNRecognizeTextRequest`, zero disk writes) implemented with opt-in Settings & History display; accuracy tested on OCR fixture set.
 
 **M5 — Stats**
 - Rollups (incremental + nightly recompute); range selector; heatmap; ribbon;

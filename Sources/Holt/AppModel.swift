@@ -27,6 +27,7 @@ final class AppModel {
     let db: HoltDatabase
     let store: TaskStore
     let spanStore: SpanStore
+    let screenStore: ScreenStore
     let classifier: Classifier
 
     private(set) var state: SessionState
@@ -42,6 +43,7 @@ final class AppModel {
     var selectedTaskId: Int64?
 
     var currentSessionDBId: Int64? { activeSessionID }
+    var currentAppWindowTitle: String? { activityTracker.currentApp?.windowTitle }
 
     /// Set when a work session just finished so the UI can ask "What did you do?".
     var pendingSessionNoteId: Int64?
@@ -61,6 +63,7 @@ final class AppModel {
     @ObservationIgnored private let activity: ActivityMonitor
     @ObservationIgnored private let activityTracker: ActivityTracker
     @ObservationIgnored private let browserTracker: BrowserTracker
+    @ObservationIgnored private let screenObserver: ScreenObserver
     @ObservationIgnored private var nmServer: NativeMessagingServer?
     @ObservationIgnored private var procrastination = ProcrastinationDetector()
     @ObservationIgnored private var lastDistractionAlert: ProcrastinationAlert?
@@ -100,14 +103,17 @@ final class AppModel {
         self.db = openedDB
         let store = TaskStore(db: openedDB)
         let spanStore = SpanStore(db: openedDB)
+        let screenStore = ScreenStore(db: openedDB)
         let loadedRules = (try? spanStore.fetchUserRules()) ?? []
         let classifier = Classifier(userRules: loadedRules)
         self.store = store
         self.spanStore = spanStore
+        self.screenStore = screenStore
         self.userRules = loadedRules
         self.classifier = classifier
         self.activityTracker = ActivityTracker(store: spanStore, classifier: classifier)
         self.browserTracker = BrowserTracker(store: spanStore, classifier: classifier)
+        self.screenObserver = ScreenObserver(screenStore: screenStore)
 
         // Migrate UserDefaults from M0/M1 on first launch with SQLite.
         let legacyState = UserDefaults.standard.data(forKey: Keys.legacyState)
@@ -693,6 +699,28 @@ final class AppModel {
             sessionKind: state.phase.kind?.dbKind
         )
         evaluateProcrastination(isIdle: isCurrentlyIdle)
+        let inWork: Bool
+        if case .running(.work, _, _, _) = state.phase { inWork = true } else { inWork = false }
+        let isAmbiguous = (activityTracker.currentApp?.category == .neutral && browserTracker.currentWeb == nil)
+        screenObserver.maybeCapture(
+            settings: settings,
+            inWorkSession: inWork && !isCurrentlyIdle,
+            isAmbiguous: isAmbiguous,
+            sessionId: activeSessionID,
+            activeTaskTitle: selectedTask?.title,
+            currentURL: nil
+        ) { [weak self] result in
+            guard let self else { return }
+            try? self.spanStore.recordProcrastination(ProcrastinationEventRecord(
+                ts: Int64(Date.now.timeIntervalSince1970),
+                sessionId: self.activeSessionID,
+                kind: ProcrastinationKind.screen.rawValue,
+                subject: "Screen: \(result.label.rawValue)",
+                durationSec: self.settings.screenIntervalMinutes * 60,
+                severity: 1
+            ))
+            self.say("Screen check noticed \(result.label.rawValue) during deep work.")
+        }
 
         guard settings.pauseWhenIdle else { return }
         let threshold = TimeInterval(settings.idleMinutes * 60)

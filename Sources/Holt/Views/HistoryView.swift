@@ -12,6 +12,7 @@ struct HistoryView: View {
     @State private var dayApps: [AppSpanRecord] = []
     @State private var dayWebs: [WebSpanRecord] = []
     @State private var dayProcrastination: [ProcrastinationEventRecord] = []
+    @State private var dayObservations: [ScreenObservationRecord] = []
     @State private var dayNote: String = ""
     @State private var daySummary: DayStatsSummary?
 
@@ -212,6 +213,32 @@ struct HistoryView: View {
                 .padding(10)
                 .holtGlass(cornerRadius: 12)
             }
+
+            if !dayObservations.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Screen observations (\(dayObservations.count))").font(.headline)
+                    ForEach(dayObservations.prefix(8)) { obs in
+                        HStack {
+                            Text(obs.label ?? "other")
+                                .font(.caption.weight(.medium))
+                            if let onTask = obs.onTask {
+                                Text("on task: \(onTask)")
+                                    .font(.caption2)
+                                    .foregroundStyle(onTask == "yes" ? .green : (onTask == "no" ? .red : .secondary))
+                            }
+                            Spacer()
+                            if let kw = obs.keywords, !kw.isEmpty {
+                                Text(kw)
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                .padding(10)
+                .holtGlass(cornerRadius: 12)
+            }
         }
         .padding(16)
         .holtGlass(cornerRadius: 16)
@@ -303,6 +330,7 @@ struct HistoryView: View {
         dayApps = (try? model.spanStore.fetchAppSpans(day: selectedDay)) ?? []
         dayWebs = (try? model.spanStore.fetchWebSpans(day: selectedDay)) ?? []
         dayProcrastination = (try? model.spanStore.fetchProcrastinationEvents(day: selectedDay)) ?? []
+        dayObservations = (try? model.screenStore.fetchObservations(day: selectedDay)) ?? []
         dayNote = (try? model.store.fetchDayNote(day: selectedDay)) ?? ""
         daySummary = try? model.store.daySummary(day: selectedDay)
     }

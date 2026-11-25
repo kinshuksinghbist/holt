@@ -114,6 +114,7 @@ public struct AppSettings: Equatable, Sendable {
     public static let idleRange = 1...30
     public static let workingTooLongRange = 30...240
     public static let retentionRange = 30...3650
+    public static let screenIntervalRange = 1...15
 
     public var workMinutes = 25
     public var shortBreakMinutes = 5
@@ -146,6 +147,11 @@ public struct AppSettings: Equatable, Sendable {
     public var retentionDays = 365
     public var chromeExtensionId: String = ""
 
+    // Screen understanding (M4, opt-in)
+    public var enableScreenUnderstanding = false
+    public var screenIntervalMinutes = 3
+    public var screenExclusions: [String] = []
+
     public init() {}
 
     public var timerConfig: TimerConfig {
@@ -176,6 +182,7 @@ public struct AppSettings: Equatable, Sendable {
         s.idleMinutes = Self.clamp(idleMinutes, Self.idleRange)
         s.workingTooLongMinutes = Self.clamp(workingTooLongMinutes, Self.workingTooLongRange)
         s.retentionDays = Self.clamp(retentionDays, Self.retentionRange)
+        s.screenIntervalMinutes = Self.clamp(screenIntervalMinutes, Self.screenIntervalRange)
         s.soundVolume = min(max(soundVolume.isFinite ? soundVolume : 0.8, 0.0), 1.0)
         return s
     }
@@ -195,6 +202,7 @@ extension AppSettings: Codable {
         case hotkeysEnabled, startPauseHotkey, breakHotkey, endHotkey
         case trackApps, trackWindowTitles, trackBrowsers, trackYouTube, youtubePolicy
         case retentionDays, chromeExtensionId
+        case enableScreenUnderstanding, screenIntervalMinutes, screenExclusions
     }
 
     public init(from decoder: Decoder) throws {
@@ -228,5 +236,8 @@ extension AppSettings: Codable {
         youtubePolicy = try c.decodeIfPresent(YouTubePolicy.self, forKey: .youtubePolicy) ?? d.youtubePolicy
         retentionDays = try c.decodeIfPresent(Int.self, forKey: .retentionDays) ?? d.retentionDays
         chromeExtensionId = try c.decodeIfPresent(String.self, forKey: .chromeExtensionId) ?? d.chromeExtensionId
+        enableScreenUnderstanding = try c.decodeIfPresent(Bool.self, forKey: .enableScreenUnderstanding) ?? d.enableScreenUnderstanding
+        screenIntervalMinutes = try c.decodeIfPresent(Int.self, forKey: .screenIntervalMinutes) ?? d.screenIntervalMinutes
+        screenExclusions = try c.decodeIfPresent([String].self, forKey: .screenExclusions) ?? d.screenExclusions
     }
 }

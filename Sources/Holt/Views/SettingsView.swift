@@ -128,6 +128,43 @@ struct SettingsView: View {
                 }
             }
 
+            Section {
+                Toggle("On-device screen understanding (opt-in)", isOn: $model.settings.enableScreenUnderstanding)
+                Stepper(value: $model.settings.screenIntervalMinutes, in: AppSettings.screenIntervalRange) {
+                    LabeledContent("Check every", value: "\(model.settings.screenIntervalMinutes) min during work")
+                }
+                .disabled(!model.settings.enableScreenUnderstanding)
+
+                HStack {
+                    Text("Screen Recording permission")
+                    Spacer()
+                    Text(ScreenObserver.hasPermission() ? "Granted" : "Not granted")
+                        .font(.caption)
+                        .foregroundStyle(ScreenObserver.hasPermission() ? .green : .secondary)
+                    if !ScreenObserver.hasPermission() {
+                        Button("Request") {
+                            _ = ScreenObserver.requestPermission()
+                        }
+                        .controlSize(.small)
+                    }
+                }
+
+                TextField("Excluded apps/domains (comma-separated)", text: Binding(
+                    get: { model.settings.screenExclusions.joined(separator: ", ") },
+                    set: { raw in
+                        model.settings.screenExclusions = raw
+                            .split(separator: ",")
+                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                            .filter { !$0.isEmpty }
+                    }
+                ))
+                .textFieldStyle(.roundedBorder)
+            } header: {
+                Text("Screen understanding")
+            } footer: {
+                Text("Screenshots stay in memory for Apple Vision OCR and are discarded immediately. Password managers, banking, and private windows are excluded.")
+            }
+
             Section("Data & backups") {
                 HStack {
                     Button("Export JSON…") { exportJSON() }
