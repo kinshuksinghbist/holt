@@ -8,6 +8,31 @@ public enum HoltDay {
         let c = calendar.dateComponents([.year, .month, .day], from: shifted)
         return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
     }
+
+    public static func date(fromKey key: String, calendar: Calendar = .current) -> Date? {
+        let parts = key.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
+    }
+
+    /// Epoch seconds `[start, end)` for a Holt day key (e.g. 04:00 local to 04:00 next day).
+    public static func bounds(forKey key: String, rolloverHour: Int = 4, calendar: Calendar = .current) -> (start: Int64, end: Int64)? {
+        guard let midnight = date(fromKey: key, calendar: calendar),
+              let start = calendar.date(byAdding: .hour, value: rolloverHour, to: midnight),
+              let end = calendar.date(byAdding: .day, value: 1, to: start) else {
+            return nil
+        }
+        return (Int64(start.timeIntervalSince1970), Int64(end.timeIntervalSince1970))
+    }
+
+    public static func addingDays(_ days: Int, toKey key: String, calendar: Calendar = .current) -> String? {
+        guard let d = date(fromKey: key, calendar: calendar),
+              let shifted = calendar.date(byAdding: .day, value: days, to: d) else {
+            return nil
+        }
+        let c = calendar.dateComponents([.year, .month, .day], from: shifted)
+        return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
+    }
 }
 
 /// Today's running totals (until the database lands in M2).

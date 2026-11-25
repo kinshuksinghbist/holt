@@ -11,9 +11,11 @@ enum NotificationCategory: String, CaseIterable {
     case breakOver = "holt.break-over"
     case away = "holt.away"
     case workingTooLong = "holt.working-too-long"
+    case quickAdd = "holt.quick-add"
 
     static let actionPrefix = "holt.action."
     static let snoozeTooLongID = "holt.custom.snooze-too-long"
+    static let quickAddTextID = "holt.custom.quick-add-text"
 
     var actionDefinitions: [(id: String, title: String)] {
         switch self {
@@ -44,6 +46,25 @@ enum NotificationCategory: String, CaseIterable {
                 (Self.identifier(for: .takeBreak), "Take break"),
                 (Self.snoozeTooLongID, "Snooze 20 m"),
             ]
+        case .quickAdd:
+            return []
+        }
+    }
+
+    func makeUNActions() -> [UNNotificationAction] {
+        if self == .quickAdd {
+            return [
+                UNTextInputNotificationAction(
+                    identifier: Self.quickAddTextID,
+                    title: "Add todo",
+                    options: [],
+                    textInputButtonTitle: "Add",
+                    textInputPlaceholder: "What needs doing?"
+                )
+            ]
+        }
+        return actionDefinitions.map { item in
+            UNNotificationAction(identifier: item.id, title: item.title, options: [])
         }
     }
 
@@ -76,9 +97,7 @@ final class Notifier {
         let categories = NotificationCategory.allCases.map { category in
             UNNotificationCategory(
                 identifier: category.rawValue,
-                actions: category.actionDefinitions.map { item in
-                    UNNotificationAction(identifier: item.id, title: item.title, options: [])
-                },
+                actions: category.makeUNActions(),
                 intentIdentifiers: [],
                 options: []
             )
@@ -119,8 +138,13 @@ final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse
     ) async {
         let identifier = response.actionIdentifier
+        let inputText = (response as? UNTextInputNotificationResponse)?.userText
         await MainActor.run {
-            AppModel.shared.handleNotificationAction(identifier)
+            if identifier == NotificationCategory.quickAddTextID, let inputText {
+                AppModel.shared.handleQuickAddNotification(text: inputText)
+            } else {
+                AppModel.shared.handleNotificationAction(identifier)
+            }
         }
     }
 }

@@ -4,6 +4,23 @@ public enum SessionKind: String, Codable, Sendable, CaseIterable {
     case work, shortBreak, longBreak
 
     public var isBreak: Bool { self != .work }
+
+    public var dbKind: String {
+        switch self {
+        case .work: "work"
+        case .shortBreak: "short_break"
+        case .longBreak: "long_break"
+        }
+    }
+
+    public init?(dbKind: String) {
+        switch dbKind {
+        case "work": self = .work
+        case "short_break": self = .shortBreak
+        case "long_break": self = .longBreak
+        default: return nil
+        }
+    }
 }
 
 public enum PauseReason: String, Codable, Sendable {

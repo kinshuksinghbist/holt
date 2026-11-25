@@ -1,44 +1,90 @@
 import HoltCore
 import SwiftUI
 
-/// The full app: timer hero on the left, today and Holt's feed on the right.
+enum MainTab: String, CaseIterable, Identifiable {
+    case today = "Today"
+    case history = "History"
+    case stats = "Stats"
+
+    var id: String { rawValue }
+    var symbol: String {
+        switch self {
+        case .today: "checklist"
+        case .history: "calendar"
+        case .stats: "chart.bar.xaxis"
+        }
+    }
+}
+
+/// The full app: hero timer at top, tab switcher for Today, History, and Stats.
 struct MainWindowView: View {
-    let model: AppModel
+    @Bindable var model: AppModel
     @Environment(\.openWindow) private var openWindow
+    @State private var tab: MainTab = .today
+    @State private var focusQuickAdd = false
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Label("Holt also lives in your menu bar — look for \(Image(systemName: "scope")) near the clock.",
-                      systemImage: "menubar.arrow.up.rectangle")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 18) {
                 HStack(alignment: .top, spacing: 20) {
                     TimerHero(model: model, compact: false)
-                        .frame(maxWidth: 440)
-                    VStack(alignment: .leading, spacing: 16) {
+                        .frame(maxWidth: 420)
+                    VStack(alignment: .leading, spacing: 14) {
                         TodayCard(model: model)
                         ToneSlider(model: model)
                             .padding(14)
                             .holtGlass(cornerRadius: 16)
-                        HoltFeed(lines: model.feed)
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
-                ComingNext()
+
+                Picker("Section", selection: $tab) {
+                    ForEach(MainTab.allCases) { item in
+                        Label(item.rawValue, systemImage: item.symbol).tag(item)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 360)
+
+                switch tab {
+                case .today:
+                    TodayView(model: model, focusQuickAdd: $focusQuickAdd)
+                case .history:
+                    HistoryView(model: model)
+                case .stats:
+                    ComingNext()
+                }
             }
             .padding(24)
         }
-        .frame(minWidth: 820, minHeight: 640)
+        .frame(minWidth: 880, minHeight: 680)
         .onAppear {
-            // Lets AppKit code (reopen) open windows through SwiftUI.
             model.windowOpener = openWindow
             Diagnostics.log("main window appeared")
         }
+        .sheet(isPresented: $model.isPlanSheetPresented) {
+            PlanYourDaySheet(model: model)
+        }
         .toolbar {
-            ToolbarItem {
+            ToolbarItemGroup {
                 Button {
-                    openWindow(id: WindowID.settings)
+                    tab = .today
+                    focusQuickAdd = true
+                } label: {
+                    Label("New Todo", systemImage: "plus")
+                }
+                .keyboardShortcut("n", modifiers: .command)
+                .help("Quick add todo (⌘N)")
+
+                Button {
+                    model.openPlanYourDay()
+                } label: {
+                    Label("Plan day", systemImage: "sun.horizon")
+                }
+                .help("Plan your day")
+
+                Button {
+                    model.openWindow(WindowID.settings)
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                 }
@@ -55,9 +101,9 @@ struct TodayCard: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Today").font(.headline)
             HStack(spacing: 10) {
-                StatTile(value: TimeFormat.duration(model.today.focusSeconds), label: "focused", symbol: "flame")
-                StatTile(value: "\(model.today.sessionsCompleted)", label: "sessions done", symbol: "checkmark.circle")
-                StatTile(value: "\(model.today.sessionsEndedEarly)", label: "ended early", symbol: "xmark.circle")
+                StatTile(value: TimeFormat.duration(TimeInterval(model.todaySummary.focusSeconds)), label: "focused", symbol: "flame")
+                StatTile(value: "\(model.todaySummary.sessionsCompleted)", label: "sessions done", symbol: "checkmark.circle")
+                StatTile(value: "\(model.todaySummary.tasksDone)/\(model.todaySummary.tasksPlanned)", label: "todos done", symbol: "checklist")
             }
         }
         .padding(14)
@@ -124,16 +170,15 @@ struct ComingNext: View {
     }
 
     private let items = [
-        Item(id: "M2", title: "Todos, lists & notes", symbol: "checklist"),
         Item(id: "M3", title: "App & website tracking", symbol: "macwindow.on.rectangle"),
         Item(id: "M4", title: "On-device screen understanding", symbol: "text.viewfinder"),
-        Item(id: "M5", title: "Stats & heatmap", symbol: "chart.bar.xaxis"),
-        Item(id: "M6", title: "Holt's reminders", symbol: "bell.badge"),
+        Item(id: "M5", title: "Stats, heatmap & Switch River", symbol: "chart.bar.xaxis"),
+        Item(id: "M6", title: "Holt's reminders & auto-sessions", symbol: "bell.badge"),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Coming next").font(.headline)
+            Text("Stats & tracking coming next").font(.headline)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 10)], spacing: 10) {
                 ForEach(items) { item in
                     HStack(spacing: 10) {

@@ -311,6 +311,7 @@ you're in a session and on task.
   (⌘N, panel, notification text reply); main window Today + History; export/
   import JSON + CSV; nightly backup (keep 7).
 - ✅ Rollover/skip-count queries tested with fixed clocks; migration tests.
+- *Progress:* GRDB `DatabasePool` + v1/v2 migrations, `TaskStore`, rollover chains, recurrence, `DataPortability` (JSON/CSV/backup), `TodayView`, `HistoryView`, `PlanYourDaySheet`, and notification text-reply quick add implemented.
 
 **M3 — Tracking**
 - ActivityTracker (apps, titles, idle, sleep/lock); BrowserTracker (Apple

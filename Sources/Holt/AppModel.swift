@@ -17,17 +17,33 @@ struct HoltLine: Identifiable, Equatable {
     let text: String
 }
 
-/// App-wide state: owns the session engine, ticks the clock, reacts to the Mac going idle,
-/// asleep or locked, and performs effects (lines, sounds, notifications).
+/// App-wide state: owns the session engine, SQLite database & task store, ticks the clock,
+/// reacts to idle/sleep/lock, and performs effects (lines, sounds, notifications).
 @MainActor
 @Observable
 final class AppModel {
     static let shared = AppModel()
 
+    let db: HoltDatabase
+    let store: TaskStore
+
     private(set) var state: SessionState
     private(set) var now: Date = .now
     private(set) var feed: [HoltLine] = []
-    private(set) var today: DailyTally
+    private(set) var todaySummary: DayStatsSummary
+    private(set) var lists: [TaskList] = []
+    private(set) var todayTasks: [TaskItem] = []
+    private(set) var chainMeta: [Int64: TaskChainMeta] = [:]
+    private(set) var sessionNotes: [NoteRecord] = []
+    var dayNote: String = ""
+    var selectedTaskId: Int64?
+
+    /// Set when a work session just finished so the UI can ask "What did you do?".
+    var pendingSessionNoteId: Int64?
+    /// Shown on first activity of a new Holt day when leftovers or recurring tasks await.
+    var isPlanSheetPresented = false
+    private(set) var planPreview = DayPlanPreview(leftovers: [], dueRecurring: [])
+
     /// Length picked with the jelly or arrow keys for the next session, in minutes.
     private(set) var pendingMinutes: Int?
     /// Tone slider value: 0 polite · 0.5 punchy · 1 strict.
@@ -36,39 +52,87 @@ final class AppModel {
     var launchAtLogin: Bool
     private(set) var loginItemMessage: String?
 
-    /// SwiftUI's window opener, captured by the main window so AppKit code can reopen windows.
     @ObservationIgnored var windowOpener: OpenWindowAction?
     @ObservationIgnored private let activity: ActivityMonitor
     @ObservationIgnored private var ticker: Task<Void, Never>?
     @ObservationIgnored private var lineCounter = 0
     @ObservationIgnored private var awaySince: Date?
     @ObservationIgnored private var continuousWork = ContinuousWorkTracker()
+    @ObservationIgnored private var activeSessionID: Int64?
+    @ObservationIgnored private var currentDayKey: String
 
     private enum Keys {
-        static let state = "holt.sessionState"
-        static let tone = "holt.tone"
-        static let settings = "holt.settings"
-        static let today = "holt.today"
+        static let legacyState = "holt.sessionState"
+        static let legacyTone = "holt.tone"
+        static let legacySettings = "holt.settings"
+        static let legacyToday = "holt.today"
+
+        static let dbState = "session_state"
+        static let dbSettings = "app_settings"
+        static let dbTone = "tone"
+        static let dbActiveSessionId = "active_session_id"
+        static let dbLastPlannedDay = "last_planned_day"
+        static let dbLastBackupDay = "last_backup_day"
     }
 
     init() {
-        let settings = Self.load(AppSettings.self, key: Keys.settings) ?? AppSettings()
-        var state = Self.load(SessionState.self, key: Keys.state) ?? SessionState()
-        state.updateConfig(settings.timerConfig)
-        let todayKey = HoltDay.key(for: .now)
-        let savedToday = Self.load(DailyTally.self, key: Keys.today)
+        let openedDB: HoltDatabase
+        do {
+            let disk = try HoltDatabase.openOnDisk()
+            if (try? disk.checkIntegrity()) == false {
+                Diagnostics.log("Database integrity check returned false")
+            }
+            openedDB = disk
+        } catch {
+            Diagnostics.log("Failed to open on-disk DB (\(error)); falling back to in-memory")
+            openedDB = try! HoltDatabase.openInMemory()
+        }
+        self.db = openedDB
+        let store = TaskStore(db: openedDB)
+        self.store = store
 
+        // Migrate UserDefaults from M0/M1 on first launch with SQLite.
+        let legacyState = UserDefaults.standard.data(forKey: Keys.legacyState)
+        let legacySettings = UserDefaults.standard.data(forKey: Keys.legacySettings)
+        let legacyToday = UserDefaults.standard.data(forKey: Keys.legacyToday)
+        let legacyTone = UserDefaults.standard.object(forKey: Keys.legacyTone) as? Double
+        try? store.migrateLegacyUserDefaults(
+            stateData: legacyState,
+            settingsData: legacySettings,
+            todayData: legacyToday,
+            tone: legacyTone
+        )
+
+        let settings = (try? store.loadSetting(AppSettings.self, key: Keys.dbSettings)) ?? AppSettings()
+        var state = (try? store.loadSetting(SessionState.self, key: Keys.dbState)) ?? SessionState()
+        state.updateConfig(settings.timerConfig)
+
+        let todayKey = HoltDay.key(for: .now)
+        self.currentDayKey = todayKey
         self.settings = settings
         self.state = state
-        if let savedToday, savedToday.day == todayKey {
-            self.today = savedToday
-        } else {
-            self.today = DailyTally(day: todayKey)
+        self.tone = (try? store.loadSetting(Double.self, key: Keys.dbTone)) ?? 0.5
+        self.activeSessionID = try? store.loadSetting(Int64.self, key: Keys.dbActiveSessionId)
+        if state.phase == .idle {
+            try? store.closeCrashedSessions()
+            self.activeSessionID = nil
         }
-        self.tone = UserDefaults.standard.object(forKey: Keys.tone) as? Double ?? 0.5
+
+        self.todaySummary = (try? store.daySummary(day: todayKey)) ?? DayStatsSummary(
+            day: todayKey, focusSeconds: 0, breakSeconds: 0, sessionsCompleted: 0,
+            sessionsAbandoned: 0, tasksPlanned: 0, tasksDone: 0, tasksSkipped: 0
+        )
         let loginStatus = SMAppService.mainApp.status
         self.launchAtLogin = loginStatus == .enabled || loginStatus == .requiresApproval
         self.activity = ActivityMonitor()
+
+        reloadTasksAndNotes()
+        if selectedTaskId == nil {
+            selectedTaskId = todayTasks.first(where: { $0.taskStatus == .doing })?.id
+                ?? todayTasks.first(where: { $0.taskStatus == .todo })?.id
+        }
+        checkNightlyBackupIfNeeded()
+        checkPlanYourDayIfNeeded()
         syncTicker()
     }
 
@@ -91,7 +155,17 @@ final class AppModel {
     var progress: Double { state.progress(at: now) }
     var isPausedSession: Bool { state.isPaused }
 
-    /// Idle or a session waiting for Start: the jelly can set the next length.
+    var undoneTodayTasks: [TaskItem] {
+        todayTasks.filter { $0.taskStatus == .todo || $0.taskStatus == .doing }
+    }
+
+    var selectedTask: TaskItem? {
+        if let id = selectedTaskId, let found = todayTasks.first(where: { $0.id == id }) {
+            return found
+        }
+        return undoneTodayTasks.first
+    }
+
     var canSetDuration: Bool {
         switch state.phase {
         case .idle, .ready: true
@@ -99,13 +173,11 @@ final class AppModel {
         }
     }
 
-    /// The kind of session the jelly / Start button would begin.
     var upcomingKind: SessionKind {
         if case let .ready(kind) = state.phase { return kind }
         return .work
     }
 
-    /// Seconds shown on the jelly: the countdown, or the length the next session would have.
     var displayedSeconds: TimeInterval {
         if canSetDuration {
             return TimeInterval((pendingMinutes ?? settings.minutes(for: upcomingKind)) * 60)
@@ -115,9 +187,10 @@ final class AppModel {
 
     var remainingFraction: Double { 1 - progress }
 
-    var todaySummary: String {
-        let sessions = today.sessionsCompleted == 1 ? "1 session" : "\(today.sessionsCompleted) sessions"
-        return "Today · \(TimeFormat.duration(today.focusSeconds)) focused · \(sessions)"
+    var todaySummaryText: String {
+        let sessions = todaySummary.sessionsCompleted == 1 ? "1 session" : "\(todaySummary.sessionsCompleted) sessions"
+        let left = todaySummary.tasksRemaining == 1 ? "1 todo" : "\(todaySummary.tasksRemaining) todos"
+        return "Today · \(TimeFormat.duration(TimeInterval(todaySummary.focusSeconds))) · \(sessions) · \(left)"
     }
 
     var menuBarTitle: String {
@@ -188,23 +261,21 @@ final class AppModel {
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Session Actions
 
-    func perform(_ action: SessionAction) {
+    func perform(_ action: SessionAction, startedBy: String = "user") {
         let isStart = action == .startWork || action == .startNext
         let duration = isStart ? pendingMinutes.map { TimeInterval($0 * 60) } : nil
-        apply { state, now in state.perform(action, now: now, duration: duration) }
+        apply(startedBy: startedBy) { state, now in state.perform(action, now: now, duration: duration) }
         if isStart { pendingMinutes = nil }
     }
 
-    /// Starts the upcoming session with an explicit length (jelly release).
     func start(minutes: Int) {
         guard canSetDuration else { return }
         pendingMinutes = minutes
         perform(state.phase == .idle ? .startWork : .startNext)
     }
 
-    /// Starts the upcoming session with the pending or default length (jelly tap, ↩).
     func startUpcoming() {
         guard canSetDuration else { return }
         start(minutes: pendingMinutes ?? settings.minutes(for: upcomingKind))
@@ -228,7 +299,6 @@ final class AppModel {
         let current = pendingMinutes ?? settings.minutes(for: upcomingKind)
         let shortest = JellyDial.minutes(atStep: 0)
         if current < shortest {
-            // Breaks can be shorter than the dial's first step: ↑ goes to it, ↓ stays put.
             if delta > 0 { pendingMinutes = shortest }
             return
         }
@@ -255,11 +325,18 @@ final class AppModel {
             return
         }
         guard let action = NotificationCategory.action(for: identifier) else { return }
-        perform(action)
+        perform(action, startedBy: "notification")
+    }
+
+    func handleQuickAddNotification(text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        quickAddTask(title: trimmed)
+        say("Added '\(trimmed)' to today's list.")
     }
 
     func saveTone() {
-        UserDefaults.standard.set(tone, forKey: Keys.tone)
+        try? store.saveSetting(tone, key: Keys.dbTone)
     }
 
     func settingsChanged() {
@@ -267,7 +344,7 @@ final class AppModel {
         if clamped != settings { settings = clamped }
         state.updateConfig(settings.timerConfig)
         GlobalHotkeys.shared.configure(with: settings)
-        Self.save(settings, key: Keys.settings)
+        try? store.saveSetting(settings, key: Keys.dbSettings)
         persist()
     }
 
@@ -293,24 +370,205 @@ final class AppModel {
         }
     }
 
+    // MARK: - Tasks, Lists, Notes, Plan Your Day
+
+    func reloadTasksAndNotes() {
+        lists = (try? store.fetchLists()) ?? []
+        todayTasks = (try? store.fetchTasks(day: currentDayKey)) ?? []
+        chainMeta = (try? store.chainMetadata(for: todayTasks)) ?? [:]
+        dayNote = (try? store.fetchDayNote(day: currentDayKey)) ?? ""
+        sessionNotes = (try? store.fetchSessionNotes(day: currentDayKey)) ?? []
+        if let summary = try? store.daySummary(day: currentDayKey) {
+            todaySummary = summary
+        }
+    }
+
+    func quickAddTask(
+        title: String,
+        listId: Int64? = nil,
+        priority: Int = 0,
+        estimatePomos: Int? = nil,
+        recurrence: TaskRecurrence = .none,
+        link: String? = nil
+    ) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let targetList = listId ?? lists.first?.id
+        if let created = try? store.createTask(
+            title: trimmed,
+            listId: targetList,
+            day: currentDayKey,
+            priority: priority,
+            estimatePomos: estimatePomos,
+            link: link,
+            recurrence: recurrence
+        ) {
+            if selectedTaskId == nil {
+                selectedTaskId = created.id
+            }
+            reloadTasksAndNotes()
+        }
+    }
+
+    func setTaskStatus(taskId: Int64, status: TaskStatus, skipReason: String? = nil) {
+        try? store.setTaskStatus(taskId: taskId, status: status, skipReason: skipReason)
+        if status.isTerminal && selectedTaskId == taskId {
+            selectedTaskId = nil
+        } else if status == .doing {
+            selectedTaskId = taskId
+        }
+        reloadTasksAndNotes()
+        if selectedTaskId == nil {
+            selectedTaskId = undoneTodayTasks.first?.id
+        }
+    }
+
+    func updateTask(_ task: TaskItem) {
+        try? store.updateTask(task)
+        reloadTasksAndNotes()
+    }
+
+    func deleteTask(id: Int64) {
+        try? store.deleteTask(id: id)
+        if selectedTaskId == id { selectedTaskId = nil }
+        reloadTasksAndNotes()
+    }
+
+    func createList(name: String, color: String, icon: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        _ = try? store.createList(name: trimmed, color: color, icon: icon)
+        reloadTasksAndNotes()
+    }
+
+    func saveDayNote(_ text: String) {
+        dayNote = text
+        try? store.saveDayNote(day: currentDayKey, body: text)
+    }
+
+    func submitSessionNote(_ text: String) {
+        guard let sessionId = pendingSessionNoteId else { return }
+        try? store.addSessionNote(day: currentDayKey, sessionId: sessionId, body: text)
+        pendingSessionNoteId = nil
+        reloadTasksAndNotes()
+    }
+
+    func dismissSessionNotePrompt() {
+        pendingSessionNoteId = nil
+    }
+
+    func openPlanYourDay() {
+        planPreview = (try? store.planYourDayPreview(forDay: currentDayKey)) ?? DayPlanPreview(leftovers: [], dueRecurring: [])
+        isPlanSheetPresented = true
+    }
+
+    func planKeepLeftover(_ task: TaskItem) {
+        _ = try? store.keepLeftover(task, toDay: currentDayKey)
+        refreshPlanPreviewAndTasks()
+    }
+
+    func planSkipLeftover(_ task: TaskItem, reason: String? = nil) {
+        guard let id = task.id else { return }
+        try? store.setTaskStatus(taskId: id, status: .skipped, skipReason: reason)
+        refreshPlanPreviewAndTasks()
+    }
+
+    func planDropLeftover(_ task: TaskItem) {
+        guard let id = task.id else { return }
+        try? store.setTaskStatus(taskId: id, status: .abandoned)
+        refreshPlanPreviewAndTasks()
+    }
+
+    func planFinishAndStartDay(keepRemaining: Bool) {
+        if keepRemaining {
+            try? store.rolloverUnfinishedTasks(toDay: currentDayKey)
+        }
+        try? store.instantiateRecurringTasks(forDay: currentDayKey)
+        try? store.saveSetting(currentDayKey, key: Keys.dbLastPlannedDay)
+        isPlanSheetPresented = false
+        reloadTasksAndNotes()
+    }
+
+    private func refreshPlanPreviewAndTasks() {
+        planPreview = (try? store.planYourDayPreview(forDay: currentDayKey)) ?? DayPlanPreview(leftovers: [], dueRecurring: [])
+        reloadTasksAndNotes()
+    }
+
     // MARK: - Transitions
 
-    /// Applies a transition, records focus time, performs effects and persists.
-    private func apply(_ transition: (inout SessionState, Date) -> [SessionEffect]) {
+    private func apply(startedBy: String = "user", _ transition: (inout SessionState, Date) -> [SessionEffect]) {
         now = .now
         rollDayIfNeeded()
         let before = state
         let workDone = state.workSecondsDone(at: now)
         let effects = transition(&state, now)
-        // Some transitions change state without effects (End on a ready session): still save them.
         guard state != before else { return }
-        // Old notification buttons would act on whatever session is current: clear them.
+
         Notifier.shared.clearDelivered()
-        today.record(effects, workSecondsDone: workDone)
+        recordSessionTransitions(before: before, effects: effects, workDone: workDone, startedBy: startedBy)
         handle(effects)
         checkContinuousWork()
         persist()
+        reloadTasksAndNotes()
         syncTicker()
+    }
+
+    private func recordSessionTransitions(
+        before: SessionState,
+        effects: [SessionEffect],
+        workDone: TimeInterval,
+        startedBy: String
+    ) {
+        for effect in effects {
+            switch effect {
+            case .completed(let kind):
+                if let sid = activeSessionID {
+                    let active = kind == .work ? Int(workDone.rounded()) : Int((before.phase.kind.map { before.config.duration(of: $0) } ?? 0).rounded())
+                    try? store.finishSession(sessionId: sid, endReason: "completed", activeSec: active, at: now)
+                    if kind == .work { pendingSessionNoteId = sid }
+                    activeSessionID = nil
+                }
+            case .endedEarly(let kind):
+                if let sid = activeSessionID {
+                    let reason = (state.phase.kind?.isBreak == true && kind == .work) ? "converted_to_break" : "ended_early"
+                    let active = kind == .work ? Int(workDone.rounded()) : 0
+                    try? store.finishSession(sessionId: sid, endReason: reason, activeSec: active, at: now)
+                    if kind == .work && active >= 60 { pendingSessionNoteId = sid }
+                    activeSessionID = nil
+                }
+            case .paused(let reason):
+                if let sid = activeSessionID {
+                    try? store.pauseSession(sessionId: sid, reason: reason, at: now)
+                }
+            case .resumed:
+                if let sid = activeSessionID {
+                    try? store.resumeSession(sessionId: sid, at: now)
+                }
+            case .started(let kind):
+                if case let .running(_, _, _, planned) = state.phase {
+                    let taskId = kind == .work ? selectedTask?.id : nil
+                    activeSessionID = try? store.startSession(
+                        kind: kind,
+                        plannedSec: Int(planned.rounded()),
+                        cycleIndex: state.cyclePosition,
+                        taskId: taskId,
+                        startedBy: startedBy,
+                        now: now
+                    )
+                }
+            case .extended:
+                if activeSessionID == nil, case let .running(kind, startedAt, _, planned) = state.phase {
+                    activeSessionID = try? store.startSession(
+                        kind: kind,
+                        plannedSec: Int(planned.rounded()),
+                        cycleIndex: state.cyclePosition,
+                        taskId: selectedTask?.id,
+                        startedBy: "notification",
+                        now: startedAt
+                    )
+                }
+            }
+        }
     }
 
     private func tick() {
@@ -354,17 +612,16 @@ final class AppModel {
     // MARK: - Idle, sleep, lock, working too long
 
     private func checkIdle() {
-        rollDayIfNeeded() // runs every 5 s, so "Today" turns over even with no session running
+        rollDayIfNeeded()
         checkContinuousWork()
         guard settings.pauseWhenIdle else { return }
         let idle = activity.secondsSinceInput(keyboardCounts: settings.keyboardCountsAsActivity)
         let threshold = TimeInterval(settings.idleMinutes * 60)
         switch state.phase {
         case .running(.work, _, _, _) where idle >= threshold:
-            // Retroactive: the idle minutes never count as focus.
             let since = Date.now.addingTimeInterval(-idle)
             apply { state, _ in state.autoPause(reason: .idle, since: since) }
-        case .paused(_, _, _, .idle) where idle < 10: // polled every 5 s: don't miss a brief return
+        case .paused(_, _, _, .idle) where idle < 10:
             apply { state, now in state.perform(.resume, now: now) }
         default:
             break
@@ -387,11 +644,7 @@ final class AppModel {
         )
         say(line)
         if settings.showNotifications {
-            Notifier.shared.post(
-                title: "Working too long",
-                body: line,
-                category: .workingTooLong
-            )
+            Notifier.shared.post(title: "Working too long", body: line, category: .workingTooLong)
         }
     }
 
@@ -401,7 +654,7 @@ final class AppModel {
     }
 
     private func userCameBack() {
-        tick() // a break may have ended while away
+        tick()
         guard let since = awaySince else { return }
         awaySince = nil
         guard case let .paused(_, _, _, reason) = state.phase, reason == .sleep || reason == .lock else { return }
@@ -414,9 +667,8 @@ final class AppModel {
         }
     }
 
-    // MARK: - Clock
+    // MARK: - Clock & Day Rollover
 
-    /// Ticks only while a session is running, waking right after each displayed second flips.
     private func syncTicker() {
         let running: Bool
         if case .running = state.phase { running = true } else { running = false }
@@ -445,24 +697,37 @@ final class AppModel {
 
     private func rollDayIfNeeded() {
         let key = HoltDay.key(for: .now)
-        if today.day != key { today = DailyTally(day: key) }
+        guard currentDayKey != key else { return }
+        currentDayKey = key
+        checkNightlyBackupIfNeeded()
+        checkPlanYourDayIfNeeded()
+        reloadTasksAndNotes()
+    }
+
+    private func checkPlanYourDayIfNeeded() {
+        let lastPlanned = try? store.loadSetting(String.self, key: Keys.dbLastPlannedDay)
+        guard lastPlanned != currentDayKey else { return }
+        let preview = (try? store.planYourDayPreview(forDay: currentDayKey)) ?? DayPlanPreview(leftovers: [], dueRecurring: [])
+        if !preview.isEmpty {
+            planPreview = preview
+            isPlanSheetPresented = true
+        } else {
+            try? store.saveSetting(currentDayKey, key: Keys.dbLastPlannedDay)
+        }
+    }
+
+    private func checkNightlyBackupIfNeeded() {
+        let lastBackup = try? store.loadSetting(String.self, key: Keys.dbLastBackupDay)
+        guard lastBackup != currentDayKey else { return }
+        if (try? DataPortability.performBackup(db: db, dayKey: currentDayKey, keepCount: 7)) != nil {
+            try? store.saveSetting(currentDayKey, key: Keys.dbLastBackupDay)
+        }
     }
 
     // MARK: - Persistence
 
     private func persist() {
-        Self.save(state, key: Keys.state)
-        Self.save(today, key: Keys.today)
-    }
-
-    private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(type, from: data)
-    }
-
-    private static func save<T: Encodable>(_ value: T, key: String) {
-        if let data = try? JSONEncoder().encode(value) {
-            UserDefaults.standard.set(data, forKey: key)
-        }
+        try? store.saveSetting(state, key: Keys.dbState)
+        try? store.saveSetting(activeSessionID, key: Keys.dbActiveSessionId)
     }
 }

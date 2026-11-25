@@ -6,6 +6,8 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @Bindable var model: AppModel
+    @State private var dataStatusMessage: String?
+    @State private var confirmResetStats = false
 
     var body: some View {
         Form {
@@ -94,6 +96,25 @@ struct SettingsView: View {
                 ToneSlider(model: model)
             }
 
+            Section("Data & backups") {
+                HStack {
+                    Button("Export JSON…") { exportJSON() }
+                    Button("Export Tasks CSV…") { exportTasksCSV() }
+                    Button("Export Sessions CSV…") { exportSessionsCSV() }
+                }
+                HStack {
+                    Button("Import JSON…") { importJSON() }
+                    Button("Backup now") { backupNow() }
+                    Button("Show DB in Finder") { showInFinder() }
+                }
+                Button("Reset all stats…", role: .destructive) {
+                    confirmResetStats = true
+                }
+                if let msg = dataStatusMessage {
+                    Text(msg).font(.caption).foregroundStyle(.secondary)
+                }
+            }
+
             Section("General") {
                 Toggle("Open Holt at login", isOn: $model.launchAtLogin)
                 if let message = model.loginItemMessage {
@@ -103,10 +124,23 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 480)
-        .frame(minHeight: 620, idealHeight: 780)
+        .frame(width: 500)
+        .frame(minHeight: 660, idealHeight: 820)
         .onChange(of: model.settings) { model.settingsChanged() }
         .onChange(of: model.launchAtLogin) { model.applyLaunchAtLogin() }
+        .confirmationDialog(
+            "Reset all session & tracking stats?",
+            isPresented: $confirmResetStats,
+            titleVisibility: .visible
+        ) {
+            Button("Reset stats", role: .destructive) {
+                try? DataPortability.resetAllStats(db: model.db)
+                model.reloadTasksAndNotes()
+                dataStatusMessage = "Stats reset."
+            }
+        } message: {
+            Text("Tasks and notes stay intact, while sessions and tracking history are cleared.")
+        }
     }
 
     private func minutesStepper(_ title: String, value: Binding<Int>, range: ClosedRange<Int>, step: Int) -> some View {
@@ -122,6 +156,68 @@ struct SettingsView: View {
         panel.canChooseDirectories = false
         if panel.runModal() == .OK, let url = panel.url {
             model.settings.customSoundPath = url.path
+        }
+    }
+
+    private func exportJSON() {
+        guard let data = try? DataPortability.exportJSON(db: model.db) else { return }
+        saveFile(defaultName: "holt-export.json", type: .json, data: data, label: "JSON exported.")
+    }
+
+    private func exportTasksCSV() {
+        guard let csv = try? DataPortability.exportTasksCSV(db: model.db),
+              let data = csv.data(using: .utf8) else { return }
+        saveFile(defaultName: "holt-tasks.csv", type: .commaSeparatedText, data: data, label: "Tasks CSV exported.")
+    }
+
+    private func exportSessionsCSV() {
+        guard let csv = try? DataPortability.exportSessionsCSV(db: model.db),
+              let data = csv.data(using: .utf8) else { return }
+        saveFile(defaultName: "holt-sessions.csv", type: .commaSeparatedText, data: data, label: "Sessions CSV exported.")
+    }
+
+    private func saveFile(defaultName: String, type: UTType, data: Data, label: String) {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [type]
+        panel.nameFieldStringValue = defaultName
+        if panel.runModal() == .OK, let url = panel.url {
+            do {
+                try data.write(to: url)
+                dataStatusMessage = label
+            } catch {
+                dataStatusMessage = "Export failed: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func importJSON() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        if panel.runModal() == .OK, let url = panel.url {
+            do {
+                let data = try Data(contentsOf: url)
+                try DataPortability.importJSON(data, into: model.db)
+                model.reloadTasksAndNotes()
+                dataStatusMessage = "Imported data."
+            } catch {
+                dataStatusMessage = "Import failed: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func backupNow() {
+        do {
+            let url = try DataPortability.performBackup(db: model.db, dayKey: HoltDay.key(for: .now), keepCount: 7)
+            dataStatusMessage = "Saved backup \(url.lastPathComponent)."
+        } catch {
+            dataStatusMessage = "Backup failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func showInFinder() {
+        if let path = model.db.path {
+            NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
         }
     }
 
