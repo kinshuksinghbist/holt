@@ -5,5 +5,8 @@
 	<!-- Hardened runtime: allow Apple Events so Holt can read browser tab URLs (M3). -->
 	<key>com.apple.security.automation.apple-events</key>
 	<true/>
+	<!-- Allow bundled RiveRuntime.framework when ad-hoc or self-signed (no Apple Team ID). -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
 </dict>
 </plist>

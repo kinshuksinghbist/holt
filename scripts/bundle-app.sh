@@ -45,11 +45,11 @@ if ! otool -l "$APP/Contents/MacOS/Holt" | grep -q "@executable_path/../Framewor
   install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/Holt"
 fi
 
-HELPER_SIGN_ARGS=(--force --options runtime --sign "$IDENTITY")
-SIGN_ARGS=(--force --options runtime --entitlements Resources/Holt.entitlements --sign "$IDENTITY")
+HELPER_SIGN_ARGS=(--force --sign "$IDENTITY")
+SIGN_ARGS=(--force --entitlements Resources/Holt.entitlements --sign "$IDENTITY")
 if [[ "$IDENTITY" != "-" ]]; then
-  HELPER_SIGN_ARGS+=(--timestamp=none)
-  SIGN_ARGS+=(--timestamp=none)
+  HELPER_SIGN_ARGS+=(--options runtime --timestamp=none)
+  SIGN_ARGS+=(--options runtime --timestamp=none)
   SIGNED_WITH="certificate $IDENTITY"
 else
   SIGNED_WITH="ad-hoc signature"
